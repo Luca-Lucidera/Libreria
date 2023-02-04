@@ -1,0 +1,48 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model Libreria {
+  idLibro  String
+  idUtente Int
+  Libro    Libro  @relation(fields: [idLibro], references: [titolo])
+  Users    Users  @relation(fields: [idUtente], references: [id])
+
+  @@id([idLibro, idUtente])
+}
+
+model Libro {
+  titolo        String     @id
+  numero        Int?
+  tipo          String
+  casa_editrice String
+  status        String
+  volumi_letti  Int
+  prezzo        Float
+  colore        String
+  Libreria      Libreria[]
+}
+
+model UserLogin {
+  id          Int      @id @default(autoincrement())
+  sessionId   String
+  lastLogin   DateTime
+  userId      Int      @unique
+  expiresDate DateTime
+  Users       Users    @relation(fields: [userId], references: [id])
+}
+
+model Users {
+  id        Int        @id(map: "PK__Users__3213E83FA0752E4D") @default(autoincrement())
+  nome      String     @db.VarChar(255)
+  cognome   String     @db.VarChar(255)
+  email     String     @db.VarChar(255)
+  password  String     @db.VarChar(255)
+  Libreria  Libreria[]
+  UserLogin UserLogin?
+}
