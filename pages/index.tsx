@@ -1,34 +1,26 @@
 import { FormEvent, useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { login } from "@/service/userService";
 import { useRouter } from "next/router";
-import Error from "@/components/Error";
+import IUser from "@/interfaces/user/IUser";
+import ErrorComponent from "@/components/Error";
 
 export default function Home() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const router = useRouter();
 
-  const { data, refetch, isLoading, isFetching, status } = useQuery({
-    queryKey: ["login"],
-    queryFn: async () => await login({ email, password }),
-    enabled: false,
-  });
-
-  useEffect(() => {
-    if (status == "success") {
-      console.log(data)
-      if (data.statusCode == 200) router.push("/home");
-      else setError(data.message!)
-    }
+  const loginMutation = useMutation<IUser, Error>({
+    mutationFn: async () => await login({ email, password}),
+    onSuccess: (user) => {
+      router.push("/home")
+    },
+    cacheTime: 0
   })
-
-  
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    refetch();
+    loginMutation.mutate();
   }
 
   return (
@@ -68,8 +60,8 @@ export default function Home() {
           </button>
         </div>
       </form>
-      {isLoading && isFetching ? <div>Caricamento</div> : <template></template>}
-      {error != "" ? <Error message={data!.message!} class={"pt-4 text-red-700"}/> : null}
+      {loginMutation.isLoading ? <div className="text-white text-2xl">Let the server cook...</div> : null}
+      {loginMutation.isError ? <div className="text-red-600 text-2xl">{loginMutation.error.message}</div> : null}
     </div>
   );
 }

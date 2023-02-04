@@ -5,11 +5,17 @@ export type TableCellProps = {
 };
 
 export default function TableCell({ value: libro }: TableCellProps) {
+  const values = Object.values(libro)
+  let c = 0;
   return (
     <>
-      {Object.values(libro).map((value) => (
-        <td>{value}</td>
-      ))}
+      {values.map((value) =>
+        typeof value === "string" && value.toString().charAt(0) === "#" ? (
+          <td style={{ backgroundColor: value }} key={`key-${c++}`}></td>
+        ) : (
+          <td className="text-white text-xl" key={`key-${c++}`}>{value}</td>
+        )
+      )}
     </>
   );
 }

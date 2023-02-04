@@ -6,19 +6,23 @@ type TableRowPops = {
   isHeader: boolean
 }
 export default function TableRow({ value: libri, isHeader }: TableRowPops) {
+  let c = 0;
   if (isHeader)
+  {
+    const headers = Object.keys(libri!.at(0)!)
     return (
-      <tr>
-        {Object.keys(libri!.at(0)!).map((key) => (
-          <th>{key}</th>
+      <tr className="border-2 border-white" key={`key-${c++}`}>
+        {headers.map((value) => (
+          <th className="text-white text-xl" key={value}>{value}</th>
         ))}
       </tr>
     );
+  }
 
   return (
     <>
       {libri?.map((libro) => (
-        <tr>
+        <tr className="border-2 border-white"  key={`key-${c++}`}>
           <TableCell value={libro} key={libro.titolo} />
         </tr>
       ))}

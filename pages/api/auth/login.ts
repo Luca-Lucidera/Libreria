@@ -3,7 +3,7 @@ import cookie from "cookie";
 import { NextApiRequest, NextApiResponse } from "next";
 import { randomUUID } from "crypto";
 import IApiResponse from "@/interfaces/IApiResponse";
-import IUser  from "@/interfaces/user/IUser";
+import IUser from "@/interfaces/user/IUser";
 
 export default async function handler(
   req: NextApiRequest,
@@ -11,9 +11,12 @@ export default async function handler(
 ) {
   if (req.method === "POST") {
     try {
-      const { email, password } = req.body;
+      const { email, password } = JSON.parse(req.body) as {
+        email: string;
+        password: string;
+      };
       if (!email || !password) {
-        return res.json({ statusCode: 400, message: "body mancante" });
+        return res.status(400).json({ message: "Body mancante" });
       }
       const user = await prisma.users.findFirst({
         where: {
@@ -23,7 +26,7 @@ export default async function handler(
       });
 
       if (!user)
-        return res.json({ statusCode: 404, message: "Utente non trovato" });
+        return res.status(404).json({ message: "Credenziali errate" });
 
       const expires = new Date(Date.now() + 3600000 * 24); //24 = numero di ore, 3600000: millisecondi == 1 ora
       const now = new Date();
@@ -33,7 +36,7 @@ export default async function handler(
         secure: true,
         sameSite: "lax",
         expires: expires,
-        path: "/"
+        path: "/",
       });
 
       await prisma.userLogin.upsert({
@@ -52,12 +55,16 @@ export default async function handler(
           userId: user.id,
         },
       });
-      return res.setHeader("Set-Cookie", sessionCookie).json({ statusCode: 200, data: user });
+      
+      return res
+        .setHeader("Set-Cookie", sessionCookie)
+        .status(200)
+        .json({ data: user });
     } catch (error) {
       console.error(error);
-      return res.json({ statusCode: 500, message: "errore interno al server" });
+      return res.status(500).json({message: "Errore interno al server, ci scusiamo per il disagio"});
     }
   } else {
-    return res.json({ statusCode: 405 });
+    return res.status(405).json({ message: "Il metodo accetta solo POST"})
   }
 }

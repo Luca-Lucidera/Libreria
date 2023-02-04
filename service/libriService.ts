@@ -8,6 +8,8 @@ axios.create({
 })
 
 export async function getUserLibri() {
-    const { data } = await axios.get<IApiResponse<ILibro[]>>("/api/libri")
-    return data
+    const resp = await fetch("/api/libri")
+    const body = await resp.json() as IApiResponse<ILibro[]>
+    if(resp.status != 200) throw new Error(body.message)
+    return body.data!
 }

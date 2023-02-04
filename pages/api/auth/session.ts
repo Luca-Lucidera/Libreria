@@ -8,31 +8,33 @@ export default async function handler(
   res: NextApiResponse<IApiResponse<IUser>>
 ) {
   if (req.method === "GET") {
-    const sessionUUID = req.cookies.session;
-    console.log("SESSION UUID", sessionUUID)
-    if (!sessionUUID) res.json({ statusCode: 302})
-    else {
-
-      const dbResp = await prisma.userLogin.findFirst({
-        where: {
-          sessionId: sessionUUID,
-        },
-        select: {
-          expiresDate: true,
-          Users: true,
-        },
-      });
-      console.log("DB RESP", dbResp)
-      if (!dbResp) res.json({ statusCode: 302})
+    try {
+      const sessionUUID = req.cookies.session;
+      if (!sessionUUID) return res.status(302);
       else {
-        const { Users, expiresDate } = dbResp!;
-        if (new Date() >= expiresDate) res.json({ statusCode: 302});
+        const dbResp = await prisma.userLogin.findFirst({
+          where: {
+            sessionId: sessionUUID,
+          },
+          select: {
+            expiresDate: true,
+            Users: true,
+          },
+        });
+        if (!dbResp) return res.status(302);
         else {
-            res.json({ statusCode: 200, data: Users})
+          const { Users, expiresDate } = dbResp!;
+          if (new Date() >= expiresDate) res.status(302);
+          else {
+            return res.status(200).json({ data: Users });
+          }
         }
       }
+    } catch (error) {
+      console.error(error)
+      return res.status(500).json({ message: "Errore interno al server, ci scusiamo per il disagio"})
     }
   } else {
-    res.json({statusCode: 405, message: "ACCETTA SOLO GET"});
+    return res.status(405).json({ message: "ACCETTA SOLO GET" });
   }
 }

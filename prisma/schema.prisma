@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlserver"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
@@ -38,7 +38,7 @@ model UserLogin {
 }
 
 model Users {
-  id        Int        @id(map: "PK__Users__3213E83FA0752E4D") @default(autoincrement())
+  id        Int        @id @default(autoincrement())
   nome      String     @db.VarChar(255)
   cognome   String     @db.VarChar(255)
   email     String     @db.VarChar(255)
