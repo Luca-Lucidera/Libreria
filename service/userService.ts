@@ -17,7 +17,6 @@ export async function getUserWithSession() {
     credentials: "include"
   })
   const body = await resp.json() as IApiResponse<IUser>
-  console.log(body)
   if(resp.status != 200) throw new Error(body.message)
   return body.data!;
 }

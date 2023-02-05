@@ -1,15 +1,14 @@
 import IApiResponse from "@/interfaces/IApiResponse";
-import IUser from "@/interfaces/user/IUser";
+import ILibro from "@/interfaces/ILibro";
 import { prisma } from "@/utils/prisma";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<IApiResponse<IUser>>
+  res: NextApiResponse<IApiResponse<any>>
 ) {
-  if (req.method === "GET") {
-    try {
-      const sessionUUID = req.cookies.session;
+    if(req.method === 'PUT') {
+        const sessionUUID = req.cookies.session;
       if (!sessionUUID)
         return res.status(302).json({ message: "uuid non trovato" });
       else {
@@ -27,19 +26,21 @@ export default async function handler(
           const { Users, expiresDate } = dbResp!;
           if (new Date() >= expiresDate) res.status(302);
           else {
-            return res.status(200).json({ data: Users });
+            const libro = JSON.parse(req.body) as ILibro
+            console.log(libro)
+            if(!libro) return res.status(400).json({ message: "Body mancante" });
+            const libroUpdated = await prisma.libro.update({
+                where: {
+                    titolo: libro.titolo
+                },
+                data: libro
+            })
+            if(!libroUpdated) return res.status(404).json({message: "libro non trovato"})
+            return res.status(200).json({message: "ok"})
           }
         }
       }
-    } catch (error) {
-      console.error("errore: ", error);
-      return res
-        .status(500)
-        .json({
-          message: "Errore interno al server, ci scusiamo per il disagio",
-        });
+    } else {
+        return res.status(405).json({ message: "IL METODO ACCETTA SOLO PUT"})
     }
-  } else {
-    return res.status(405).json({ message: "ACCETTA SOLO GET" });
-  }
 }

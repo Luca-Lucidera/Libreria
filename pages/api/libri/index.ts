@@ -1,7 +1,7 @@
 import ILibro from "@/interfaces/ILibro";
 import IApiResponse from "@/interfaces/IApiResponse";
 import { NextApiRequest, NextApiResponse } from "next";
-import prisma from "@/utils/prisma";
+import { prisma } from "@/utils/prisma";
 
 export default async function handler(
   req: NextApiRequest,
@@ -10,7 +10,8 @@ export default async function handler(
   if (req.method === "GET") {
     try {
       const sessionUUID = req.cookies.session;
-      if (!sessionUUID) return res.status(302);
+      if (!sessionUUID)
+        return res.status(302).json({ message: "uuid non presente" });
       else {
         const dbResp = await prisma.userLogin.findFirst({
           where: {
@@ -21,10 +22,11 @@ export default async function handler(
             Users: true,
           },
         });
-        if (!dbResp) return res.status(302);
+        if (!dbResp)
+          return res.status(302).json({ message: "sessione non trovata" });
         else {
           const { Users, expiresDate } = dbResp!;
-          if (new Date() >= expiresDate) return res.status(302);
+          if (new Date() >= expiresDate) return res.status(302).json({ message: "sessione scaduta"});
           else {
             const dbResp = await prisma.libreria.findMany({
               where: {

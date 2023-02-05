@@ -20,7 +20,7 @@ export default function TableCell({ value: libro, setLibroDaSelezionare, setOpen
         typeof value === "string" && value.toString().charAt(0) === "#" ? (
           <td style={{ backgroundColor: value }} key={`key-${c++}`} onClick={handleClick}></td>
         ) : (
-          <td className="text-white text-xl" key={`key-${c++}`}>{value}</td>
+          <td className="text-white text-xl ml-auto mr-auto pl-6" key={`key-${c++}`}>{value}</td>
         )
       )}
     </>

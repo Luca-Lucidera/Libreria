@@ -2,24 +2,24 @@ import ILibro from "@/interfaces/ILibro";
 import TableRow from "./Riga";
 
 type TabellaProps = {
-  value: ILibro[];
+  libri: ILibro[];
   setLibroDaSelezionare: Function;
   setOpenModal: Function;
 };
 
 export default function Tabella({
-  value,
+  libri: value,
   setLibroDaSelezionare,
   setOpenModal,
 }: TabellaProps) {
   return (
     <table className="border-white border-2 ml-auto mr-auto mt-10">
       <thead>
-        <TableRow value={value} isHeader={true} key={"headers"} />
+        <TableRow libri={value} isHeader={true} key={"headers"} />
       </thead>
       <tbody>
         <TableRow
-          value={value}
+          libri={value}
           isHeader={false}
           key={"body"}
           setLibroDaSelezionare={setLibroDaSelezionare}

@@ -4,6 +4,8 @@ import { login } from "@/service/userService";
 import { useRouter } from "next/router";
 import IUser from "@/interfaces/user/IUser";
 import ErrorComponent from "@/components/Error";
+import { GetServerSideProps } from "next";
+import { serialize } from "cookie";
 
 export default function Home() {
   const [email, setEmail] = useState("");
@@ -11,12 +13,12 @@ export default function Home() {
   const router = useRouter();
 
   const loginMutation = useMutation<IUser, Error>({
-    mutationFn: async () => await login({ email, password}),
+    mutationFn: async () => await login({ email, password }),
     onSuccess: (user) => {
-      router.push("/home")
+      router.push("/home");
     },
-    cacheTime: 0
-  })
+    cacheTime: 0,
+  });
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -60,8 +62,30 @@ export default function Home() {
           </button>
         </div>
       </form>
-      {loginMutation.isLoading ? <div className="text-white text-2xl">Let the server cook...</div> : null}
-      {loginMutation.isError ? <div className="text-red-600 text-2xl">{loginMutation.error.message}</div> : null}
+      {loginMutation.isLoading ? (
+        <div className="text-white text-2xl">Let the server cook...</div>
+      ) : null}
+      {loginMutation.isError ? (
+        <div className="text-red-600 text-2xl">
+          {loginMutation.error.message}
+        </div>
+      ) : null}
     </div>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async ({ req }) => {
+  if (!req.cookies.session) return { props: {} };
+  const resp = await fetch("http://localhost:3000/api/auth/session", {
+    method: "GET",
+    credentials: "include",
+    headers: {
+      cookie: serialize("session", req.cookies.session),
+    },
+  });
+  if (resp.status == 200)
+    return { redirect: { permanent: false, destination: "/home" }, props: {} };
+  return {
+    props: {},
+  };
+};

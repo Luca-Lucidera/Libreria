@@ -1,5 +1,5 @@
 import IApiResponse from "@/interfaces/IApiResponse";
-import prisma from "@/utils/prisma";
+import {prisma} from "@/utils/prisma";
 import { serialize } from "cookie";
 import { NextApiRequest, NextApiResponse } from "next";
 

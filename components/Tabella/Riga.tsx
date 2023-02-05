@@ -2,13 +2,13 @@ import ILibro from "@/interfaces/ILibro";
 import TableCell from "./Cella";
 
 type TableRowPops = {
-  value: ILibro[];
+  libri: ILibro[];
   isHeader: boolean;
   setLibroDaSelezionare?: Function;
   setOpenModal?: Function;
 };
 export default function TableRow({
-  value: libri,
+  libri: libri,
   isHeader,
   setLibroDaSelezionare,
   setOpenModal,
@@ -19,7 +19,7 @@ export default function TableRow({
     return (
       <tr className="border-2 border-white" key={`key-${c++}`}>
         {headers.map((value) => (
-          <th className="text-white text-xl" key={value}>
+          <th className="text-white text-xl pl-2" key={value}>
             {value}
           </th>
         ))}
