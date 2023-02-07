@@ -11,7 +11,7 @@ export default async function handler(
 ) {
   if (req.method === "POST") {
     try {
-      const { email, password } = JSON.parse(req.body) as {
+      const { email, password } = req.body as {
         email: string;
         password: string;
       };

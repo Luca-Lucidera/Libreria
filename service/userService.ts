@@ -2,42 +2,53 @@ import IApiResponse from "@/interfaces/IApiResponse";
 import IUser from "@/interfaces/user/IUser";
 import UserLoginDTO from "@/interfaces/user/IUserLoginDTO";
 import IUserRegisterDTO from "@/interfaces/user/IUserRegisterDTO";
+import axios, { AxiosError } from "axios";
 
-export async function register({nome, cognome, email, password}: IUserRegisterDTO) {
-  const resp = await fetch("/api/auth/register", {
-    method: "POST",
-    body: JSON.stringify({ nome, cognome, email, password})
-  })
-  const body = await resp.json() as IApiResponse<any>
-  if(resp.status != 200) throw new Error(body.message)
-  return "ok"
+export async function register({
+  nome,
+  cognome,
+  email,
+  password,
+}: IUserRegisterDTO) {
+  try {
+    const { data } = await axios.post<IApiResponse<IUser>>("/api/auth/register",{ nome, cognome, email, password });
+    return "ok";
+  } catch (error: any) {
+    const axiosError: AxiosError<IApiResponse<IUser>> = error;
+    throw new Error(axiosError.response!.data.message);
+  }
 }
 
 export async function login({ email, password }: UserLoginDTO) {
-  const resp = await fetch("/api/auth/login", {
-    method: "POST",
-    body: JSON.stringify({ email, password }),
-  });
-  const body = await resp.json() as IApiResponse<IUser>
-  if(resp.status != 200) throw new Error(body.message)
-  return body.data!;
+  try {
+    const { data } = await axios.post<IApiResponse<IUser>>("/api/auth/login", { email, password });
+    return data.data!;
+  } catch (error: any) {
+    const axiosError: AxiosError<IApiResponse<IUser>> = error;
+    throw new Error(axiosError.response!.data.message);
+  }
 }
 
 export async function getUserWithSession() {
-  const resp = await fetch("/api/auth/session", {
-    credentials: "include"
-  })
-  const body = await resp.json() as IApiResponse<IUser>
-  if(resp.status != 200) throw new Error(body.message)
-  return body.data!;
+  try {
+    const { data } = await axios.get<IApiResponse<IUser>>("/api/auth/session", {
+      withCredentials: true,
+    });
+    return data.data;
+  } catch (error: any) {
+    const axiosError: AxiosError<IApiResponse<IUser>> = error;
+    throw new Error(axiosError.response!.data.message);
+  }
 }
 
 export async function logout() {
-  await fetch("/api/auth/logout", {
-    method: "DELETE",
-    credentials: "include"
-  })
-  return "ok";
+  try {
+    const { data } = await axios.delete<IApiResponse<any>>("/api/auth/logout", {
+      withCredentials: true,
+    });
+    return data.data;
+  } catch (error: any) {
+    const axiosError: AxiosError<IApiResponse<IUser>> = error;
+    throw new Error(axiosError.response!.data.message);
+  }
 }
-
-

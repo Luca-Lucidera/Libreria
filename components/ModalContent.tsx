@@ -60,9 +60,9 @@ export default function ModalContent({
               }
             >
               {map[0] === "tipo"
-                ? typeList.map((tipo) => <option value={tipo} key={"option-type-" + index}>{tipo}</option>)
-                : statusList.map((status) => (
-                    <option value={status} key={"option-status-" + index}>{status}</option>
+                ? typeList.map((tipo, i) => <option value={tipo} key={"option-type-" + i}>{tipo}</option>)
+                : statusList.map((status, i) => (
+                    <option value={status} key={"option-status-" + i}>{status}</option>
                   ))}
             </select>
           ) : map[0] === "id" ? null : (

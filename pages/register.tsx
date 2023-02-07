@@ -4,6 +4,7 @@ import { FormEvent, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { register } from "@/service/userService";
+import axios from "axios";
 
 export default function Register() {
   const router = useRouter();
@@ -84,14 +85,13 @@ export default function Register() {
 
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   if (!req.cookies.session) return { props: {} };
-  const resp = await fetch("http://localhost:3000/api/auth/session", {
-    method: "GET",
-    credentials: "include",
+  const { status } = await axios.get("http://localhost:3000/api/auth/session", {
+    withCredentials: true,
     headers: {
       cookie: serialize("session", req.cookies.session),
-    },
-  });
-  if (resp.status == 200)
+    }
+  })
+  if (status == 200)
     return { redirect: { permanent: false, destination: "/home" }, props: {} };
   return {
     props: {},

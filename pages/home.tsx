@@ -6,6 +6,7 @@ import IUser from "@/interfaces/user/IUser";
 import { createLibro, getUserLibri, updateLibro } from "@/service/libriService";
 import { logout } from "@/service/userService";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
 import { serialize } from "cookie";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
@@ -170,22 +171,18 @@ export default function HomePage({ user }: userProps) {
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
-  if (!req.cookies.session)
-    return { redirect: { permanent: false, destination: "/" }, props: {} };
-  const resp = await fetch("http://localhost:3000/api/auth/session", {
-    method: "GET",
-    credentials: "include",
+  if (!req.cookies.session) return { props: {} };
+  const { status, data } = await axios.get("http://localhost:3000/api/auth/session", {
+    withCredentials: true,
     headers: {
       cookie: serialize("session", req.cookies.session),
-    },
-  });
-
-  const body = (await resp.json()) as IApiResponse<IUser>;
-  if (resp.status != 200)
+    }
+  })
+  if (status != 200)
     return { redirect: { permanent: false, destination: "/" }, props: {} };
   return {
     props: {
-      user: body.data,
+      user: data.data,
     },
   };
 };

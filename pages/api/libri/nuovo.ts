@@ -25,7 +25,7 @@ export default async function handler(
       const { User: user, expires } = data!
       if(new Date() > expires) return res.status(302).json({ message: "sessione scaduta" })
       if(!user) return res.status(302).json({ message: "utente non trovato" })
-      const libro = JSON.parse(req.body) as ILibro
+      const libro = req.body.libro as ILibro
       console.log("Libro:", libro)
       if(!libro) return res.status(400).json({ message: "Inserire il libro nuovo"})
       const libreria = await prisma.libri.findMany({ where: { userId: user.id }}) as ILibro[]

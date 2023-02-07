@@ -1,34 +1,40 @@
-import IApiResponse from '@/interfaces/IApiResponse'
-import ILibro from '@/interfaces/ILibro'
+import IApiResponse from "@/interfaces/IApiResponse";
+import ILibro from "@/interfaces/ILibro";
+import axios, { AxiosError } from "axios";
 
 export async function getUserLibri() {
-    const resp = await fetch("/api/libri", { 
-        credentials: "include"
-    })
-    const body = await resp.json() as IApiResponse<ILibro[]>
-    if(resp.status != 200) throw new Error(body.message)
-    return body.data!
+  try {
+    const { data } = await axios.get<IApiResponse<ILibro[]>>("/api/libri", {
+      withCredentials: true,
+    });
+    return data.data!
+  }  catch (error: any) {
+    const axiosError: AxiosError<IApiResponse<ILibro>> = error;
+    throw new Error(axiosError.response!.data.message);
+  }
+  
 }
 
 export async function updateLibro(libro: ILibro) {
-    const resp = await fetch("/api/libri/update", {
-        method: "PUT",
-        credentials: "include",
-        body: JSON.stringify(libro)
-    })
-    const body = await resp.json() as IApiResponse<any>
-    if(resp.status != 200) throw new Error(body.message)
+  try {
+    const resp = await axios.put<IApiResponse<any>>("/api/libri/update", { libro },  {
+      withCredentials: true, 
+    });
     return "ok"
+  }  catch (error: any) {
+    const axiosError: AxiosError<IApiResponse<ILibro>> = error;
+    throw new Error(axiosError.response!.data.message);
+  }
 }
 
-export async function createLibro(libro:ILibro) {
-    
-    const resp = await fetch("/api/libri/nuovo", {
-        method: "POST",
-        credentials:"include",
-        body: JSON.stringify(libro)
-    })
-    const body = await resp.json() as IApiResponse<any>
-    if(resp.status != 200) throw new Error(body.message)
+export async function createLibro(libro: ILibro) {
+  try {
+    const resp = await axios.post<IApiResponse<any>>("/api/libri/nuovo", { libro }, {
+      withCredentials: true,
+    });
     return "ok"
+  }  catch (error: any) {
+    const axiosError: AxiosError<IApiResponse<ILibro>> = error;
+    throw new Error(axiosError.response!.data.message);
+  }
 }

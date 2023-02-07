@@ -8,9 +8,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 export default async function handler(req: NextApiRequest, res: NextApiResponse<IApiResponse<any>>) {
   if (req.method === "POST") {
     try {
-      const { nome, cognome, email, password } = JSON.parse(
-        req.body
-      ) as IUserRegisterDTO;
+      const { nome, cognome, email, password } = req.body as IUserRegisterDTO;
       if(!nome || !cognome || !email || !password) return res.status(400).json({ message: "Credenziali mancano"})
 
       const userFound = await prisma.users.findFirst({
