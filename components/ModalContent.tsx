@@ -23,7 +23,7 @@ export default function ModalContent({
   return (
     <div>
       {entries.map((map: [string, string | number], index) => (
-        <div className="mb-4" key={"index-" + index}>
+        <div className="mb-4" key={"div-" + index}>
           {map[0] !== "id" ? (
             <label className="text-white text-2xl mr-2" htmlFor={map[0]} key={index}>
               {map[0].charAt(0).toUpperCase() + map[0].slice(1)}
@@ -32,6 +32,7 @@ export default function ModalContent({
           {typeof map[1] === "number" ? (
             <>
               <input
+                key={"input-" + index}
                 type="number"
                 className="p-1 rounded-md w-14"
                 max={map[0] === "letti" ? attuali : 999}
@@ -50,6 +51,7 @@ export default function ModalContent({
             </>
           ) : map[0] == "tipo" || map[0] == "status" ? (
             <select
+              key={"select-" + index}
               className="p-1 w-1/2 rounded-md"
               id={map[0]}
               value={map[1]}
@@ -58,14 +60,15 @@ export default function ModalContent({
               }
             >
               {map[0] === "tipo"
-                ? typeList.map((tipo) => <option value={tipo}>{tipo}</option>)
+                ? typeList.map((tipo) => <option value={tipo} key={"option-type-" + index}>{tipo}</option>)
                 : statusList.map((status) => (
-                    <option value={status}>{status}</option>
+                    <option value={status} key={"option-status-" + index}>{status}</option>
                   ))}
             </select>
           ) : map[0] === "id" ? null : (
             <input
               type="text"
+              key={"text-" + index}
               className="p-1 rounded-md"
               id={map[0]}
               value={map[1]}
