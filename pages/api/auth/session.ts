@@ -10,34 +10,24 @@ export default async function handler(
   if (req.method === "GET") {
     try {
       const sessionUUID = req.cookies.session;
-      if (!sessionUUID)
-        return res.status(302).json({ message: "uuid non trovato" });
-      else {
-        const dbResp = await prisma.userLogin.findFirst({
-          where: {
-            sessionId: sessionUUID,
-          },
-          select: {
-            expiresDate: true,
-            Users: true,
-          },
-        });
-        if (!dbResp) return res.status(302);
-        else {
-          const { Users, expiresDate } = dbResp!;
-          if (new Date() >= expiresDate) res.status(302);
-          else {
-            return res.status(200).json({ data: Users });
-          }
-        }
-      }
+      if (!sessionUUID) return res.status(302).json({ message: "uuid non trovato" });
+      const data = await prisma.logins.findFirst({
+        where: {
+          sessionUUID: sessionUUID,
+        },
+        select: {
+          expires: true,
+          User: true,
+        },
+      });
+      if(!data) return res.status(302).json({ message: "sessione non trovata" })
+      const { User: user, expires } = data!
+      if(new Date() > expires) return res.status(302).json({ message: "sessione scaduta" })
+      if(!user) return res.status(302).json({ message: "utente non trovato" })
+      return res.status(200).json({ data: user })
     } catch (error) {
-      console.error("errore: ", error);
-      return res
-        .status(500)
-        .json({
-          message: "Errore interno al server, ci scusiamo per il disagio",
-        });
+      console.error(error);
+      return res.status(500).json({ message: "Errore interno al server, ci scusiamo per il disagio" });
     }
   } else {
     return res.status(405).json({ message: "ACCETTA SOLO GET" });

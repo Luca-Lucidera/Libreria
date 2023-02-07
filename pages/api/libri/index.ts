@@ -10,44 +10,40 @@ export default async function handler(
   if (req.method === "GET") {
     try {
       const sessionUUID = req.cookies.session;
-      if (!sessionUUID)
-        return res.status(302).json({ message: "uuid non presente" });
-      else {
-        const dbResp = await prisma.userLogin.findFirst({
-          where: {
-            sessionId: sessionUUID,
-          },
-          select: {
-            expiresDate: true,
-            Users: true,
-          },
-        });
-        if (!dbResp)
-          return res.status(302).json({ message: "sessione non trovata" });
-        else {
-          const { Users, expiresDate } = dbResp!;
-          if (new Date() >= expiresDate) return res.status(302).json({ message: "sessione scaduta"});
-          else {
-            const dbResp = await prisma.libreria.findMany({
-              where: {
-                idUtente: Users.id,
-              },
-              select: {
-                Libro: true,
-              },
-            });
-            let libri: ILibro[] = [];
-            dbResp.forEach((libro) => {
-              if (libro.Libro.colore == "") {
-                libro.Libro.colore = "#ffffff";
-              }
-              libri.push(libro.Libro);
-            });
-            return res.status(200).json({ data: libri });
-          }
+      if (!sessionUUID) return res.status(302).json({ message: "uuid non trovato" });
+      const data = await prisma.logins.findFirst({
+        where: {
+          sessionUUID: sessionUUID,
+        },
+        select: {
+          expires: true,
+          User: true,
+        },
+      });
+      if(!data) return res.status(302).json({ message: "sessione non trovata" })
+      const { User: user, expires } = data!
+      if(new Date() > expires) return res.status(302).json({ message: "sessione scaduta" })
+      if(!user) return res.status(302).json({ message: "utente non trovato" })
+      const libri = await prisma.libri.findMany({ 
+        where: {
+          userId: user.id
+        },
+        select: {
+          id: true,
+          titolo: true,
+          comprati: true,
+          letti: true,
+          tipo: true,
+          editore: true,
+          status: true,
+          prezzo: true,
         }
-      }
-    } catch (error) {}
+      }) as ILibro[]
+      return res.status(200).json({data: libri})
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "Errore interno al server, ci scusiamo per il disagio" });
+    }
   } else {
     return res.status(405).json({ message: "ACCETTA SOLO GET" });
   }

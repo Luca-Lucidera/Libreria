@@ -11,17 +11,17 @@ export default async function handler(
     const sessionCookie = req.cookies.session;
     if (!sessionCookie) return res.status(302).json({ message: "ok"});
     else {
-      const data = await prisma.userLogin.findFirst({
+      const data = await prisma.logins.findFirst({
         where: {
-          sessionId: sessionCookie
+          sessionUUID: sessionCookie
         },
       })
       if(!data) return res.status(302).json({ message: "ok"})
       const { id } = data!
-      await prisma.userLogin.update({
+      await prisma.logins.update({
         data: {
-          sessionId: "",
-          expiresDate: new Date()
+          sessionUUID: "",
+          expires: new Date()
         },
         where: {
           id: id

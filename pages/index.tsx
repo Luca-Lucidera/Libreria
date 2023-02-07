@@ -6,6 +6,7 @@ import IUser from "@/interfaces/user/IUser";
 import ErrorComponent from "@/components/Error";
 import { GetServerSideProps } from "next";
 import { serialize } from "cookie";
+import Link from "next/link";
 
 export default function Home() {
   const [email, setEmail] = useState("");
@@ -56,7 +57,7 @@ export default function Home() {
         <div className="mt-4 flex justify-center">
           <button
             type="submit"
-            className="text-white ml-auto mr-auto rounded bg-green-700 pl-2 pr-2 pb-1 pt-1"
+            className="text-white text-xl rounded border-solid border-2 p-2 border-green-800  hover:bg-green-800 hover:text-black"
           >
             Login
           </button>
@@ -70,6 +71,7 @@ export default function Home() {
           {loginMutation.error.message}
         </div>
       ) : null}
+      <Link href={"/register"} className="text-white text-xl mt-4 border-solid border-2 rounded p-2 hover:bg-neutral-300 hover:text-black">Registrati</Link>
     </div>
   );
 }

@@ -6,8 +6,9 @@ import type { AppProps } from "next/app";
 const queryClient = new QueryClient();
 
 export default function App({ Component, pageProps }: AppProps) {
+  //
   return (
-    <div className="h-screen bg-zinc-800">
+    <div className="bg-zinc-800">
       <QueryClientProvider client={queryClient}>
         <Component {...pageProps} />
         <ReactQueryDevtools />

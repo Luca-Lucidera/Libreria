@@ -7,10 +7,11 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<IApiResponse<any>>
 ) {
-  if (req.method === "PUT") {
+  if (req.method === "POST") {
     try {
       const sessionUUID = req.cookies.session;
-      if (!sessionUUID) return res.status(302).json({ message: "uuid non trovato" });
+      if (!sessionUUID)
+        return res.status(302).json({ message: "uuid non trovato" });
       const data = await prisma.logins.findFirst({
         where: {
           sessionUUID: sessionUUID,
@@ -25,16 +26,30 @@ export default async function handler(
       if(new Date() > expires) return res.status(302).json({ message: "sessione scaduta" })
       if(!user) return res.status(302).json({ message: "utente non trovato" })
       const libro = JSON.parse(req.body) as ILibro
+      console.log("Libro:", libro)
       if(!libro) return res.status(400).json({ message: "Inserire il libro nuovo"})
-      const {id, ...libroNoId} = libro
-      const libroDB = await prisma.libri.update({where:{ id: id }, data: libroNoId})
-      if(!libroDB) return res.status(400).json({message: "Errore nell'update"})
-      return res.status(200).json({ message: "ok" })
+      const libreria = await prisma.libri.findMany({ where: { userId: user.id }}) as ILibro[]
+      const libroTrovato = libreria.find((l) => l.titolo.toLowerCase().includes(libro.titolo.toLowerCase()))
+      if(libroTrovato) return res.status(400).json({ message: "Il libro inserito c'è già"})
+      const libroCreato = await prisma.libri.create({
+        data: {
+          comprati: libro.comprati,
+          editore: libro.editore,
+          letti: libro.letti,
+          prezzo: libro.prezzo,
+          status: libro.status,
+          tipo: libro.tipo,
+          titolo: libro.titolo,
+          userId: user.id
+        }
+      })
+      if(!libroCreato) return res.status(404).json({ message: "Errore nella creazione del libro"})
+      return res.status(200).json({ message: "ok"})
     } catch (error) {
       console.error(error);
       return res.status(500).json({ message: "Errore interno al server, ci scusiamo per il disagio" });
     }
   } else {
-    return res.status(405).json({ message: "ACCETTA SOLO PUT" });
+    return res.status(405).json({ message: "ACCETTA SOLO POST" });
   }
 }

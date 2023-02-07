@@ -3,46 +3,38 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
-model Libreria {
-  idLibro  String
-  idUtente Int
-  Libro    Libro  @relation(fields: [idLibro], references: [titolo])
-  Users    Users  @relation(fields: [idUtente], references: [id])
-
-  @@id([idLibro, idUtente])
-}
-
-model Libro {
-  titolo        String     @id
-  numero        Int?
-  tipo          String
-  casa_editrice String
-  status        String
-  volumi_letti  Int
-  prezzo        Float
-  colore        String
-  Libreria      Libreria[]
-}
-
-model UserLogin {
-  id          Int      @id @default(autoincrement())
-  sessionId   String
-  lastLogin   DateTime
-  userId      Int      @unique
-  expiresDate DateTime
-  Users       Users    @relation(fields: [userId], references: [id])
-}
-
 model Users {
-  id        Int        @id @default(autoincrement())
-  nome      String     @db.VarChar(255)
-  cognome   String     @db.VarChar(255)
-  email     String     @db.VarChar(255)
-  password  String     @db.VarChar(255)
-  Libreria  Libreria[]
-  UserLogin UserLogin?
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
+  nome     String
+  cognome  String
+  email    String  @unique
+  password String
+  Logins   Logins?
+  Libreria Libri[]
+}
+
+model Logins {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  sessionUUID String
+  expires     DateTime
+  userId      String   @unique @db.ObjectId
+  lastLogin   DateTime
+  User        Users    @relation(fields: [userId], references: [id])
+}
+
+model Libri {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  userId   String @db.ObjectId
+  titolo   String
+  comprati Int
+  letti    Int
+  tipo     String
+  editore  String
+  status   String
+  prezzo   Float
+  User     Users  @relation(fields: [userId], references: [id])
 }

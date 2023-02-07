@@ -1,10 +1,10 @@
 export default interface ILibro {
-  titolo: string;
-  numero: number | null;
-  tipo: string;
-  casa_editrice: string;
-  status: string;
-  volumi_letti: number;
-  prezzo: number;
-  colore: string;
+  id?: string
+  titolo: string 
+  comprati: number
+  letti: number
+  tipo: string
+  editore: string
+  status: string
+  prezzo: number
 }

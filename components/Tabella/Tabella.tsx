@@ -4,13 +4,13 @@ import TableRow from "./Riga";
 type TabellaProps = {
   libri: ILibro[];
   setLibroDaSelezionare: Function;
-  setOpenModal: Function;
+  setUpdateModalClick: Function;
 };
 
 export default function Tabella({
   libri: value,
   setLibroDaSelezionare,
-  setOpenModal,
+  setUpdateModalClick,
 }: TabellaProps) {
   return (
     <table className="border-white border-2 ml-auto mr-auto mt-10">
@@ -23,7 +23,7 @@ export default function Tabella({
           isHeader={false}
           key={"body"}
           setLibroDaSelezionare={setLibroDaSelezionare}
-          setOpenModal={setOpenModal}
+          setUpdateModalClick={setUpdateModalClick}
         />
       </tbody>
     </table>

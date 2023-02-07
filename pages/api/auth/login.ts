@@ -21,7 +21,6 @@ export default async function handler(
       const user = await prisma.users.findFirst({
         where: {
           email: email,
-          password: password,
         },
       });
 
@@ -39,20 +38,20 @@ export default async function handler(
         path: "/",
       });
 
-      await prisma.userLogin.upsert({
+      await prisma.logins.upsert({
         create: {
           userId: user.id,
-          sessionId: sessionUUID,
-          expiresDate: expires,
+          sessionUUID: sessionUUID,
+          expires: expires,
           lastLogin: now,
         },
         update: {
-          sessionId: sessionUUID,
-          expiresDate: expires,
+          sessionUUID: sessionUUID,
+          expires: expires,
           lastLogin: new Date(),
         },
         where: {
-          userId: user.id,
+          userId: user.id
         },
       });
       
