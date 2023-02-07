@@ -4,7 +4,8 @@ import axios, { AxiosError } from "axios";
 
 export async function getUserLibri() {
   try {
-    const { data } = await axios.get<IApiResponse<ILibro[]>>(process.env.API_ROOT_URL + "/api/libri", {
+    console.log(process.env.API_ROOT_URL)
+    const { data } = await axios.get<IApiResponse<ILibro[]>>("https://la-tua-libreria.vercel.app/api/libri", {
       withCredentials: true,
     });
     return data.data!
@@ -17,7 +18,8 @@ export async function getUserLibri() {
 
 export async function updateLibro(libro: ILibro) {
   try {
-    const resp = await axios.put<IApiResponse<any>>(process.env.API_ROOT_URL + "/api/libri/update", { libro },  {
+    
+    const resp = await axios.put<IApiResponse<any>>("https://la-tua-libreria.vercel.app/api/libri/update", { libro },  {
       withCredentials: true, 
     });
     return "ok"
@@ -29,7 +31,7 @@ export async function updateLibro(libro: ILibro) {
 
 export async function createLibro(libro: ILibro) {
   try {
-    const resp = await axios.post<IApiResponse<any>>(process.env.API_ROOT_URL + "/api/libri/nuovo", { libro }, {
+    const resp = await axios.post<IApiResponse<any>>("https://la-tua-libreria.vercel.app/api/libri/nuovo", { libro }, {
       withCredentials: true,
     });
     return "ok"
