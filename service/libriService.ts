@@ -4,7 +4,7 @@ import axios, { AxiosError } from "axios";
 
 export async function getUserLibri() {
   try {
-    const { data } = await axios.get<IApiResponse<ILibro[]>>("/api/libri", {
+    const { data } = await axios.get<IApiResponse<ILibro[]>>(process.env.API_ROOT_URL + "/api/libri", {
       withCredentials: true,
     });
     return data.data!
@@ -17,7 +17,7 @@ export async function getUserLibri() {
 
 export async function updateLibro(libro: ILibro) {
   try {
-    const resp = await axios.put<IApiResponse<any>>("/api/libri/update", { libro },  {
+    const resp = await axios.put<IApiResponse<any>>(process.env.API_ROOT_URL + "/api/libri/update", { libro },  {
       withCredentials: true, 
     });
     return "ok"
@@ -29,7 +29,7 @@ export async function updateLibro(libro: ILibro) {
 
 export async function createLibro(libro: ILibro) {
   try {
-    const resp = await axios.post<IApiResponse<any>>("/api/libri/nuovo", { libro }, {
+    const resp = await axios.post<IApiResponse<any>>(process.env.API_ROOT_URL + "/api/libri/nuovo", { libro }, {
       withCredentials: true,
     });
     return "ok"

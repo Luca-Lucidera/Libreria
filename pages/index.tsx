@@ -78,7 +78,7 @@ export default function Home() {
 
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   if (!req.cookies.session) return { props: {} };
-  const { status } = await axios.get("/api/auth/session", {
+  const { status } = await axios.get(process.env.API_ROOT_URL + "/api/auth/session", {
     withCredentials: true,
     headers: {
       cookie: serialize("session", req.cookies.session),
