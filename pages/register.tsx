@@ -26,7 +26,7 @@ export default function Register() {
     registerMutation.mutate();
   }
   return (
-    <div className="flex justify-center items-center flex-col h-screen">
+    <div className="flex justify-center items-center flex-col h-full">
       <h1 className="text-white text-2xl mb-4">Register</h1>
       <form onSubmit={handleSubmit}>
         <div>

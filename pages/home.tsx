@@ -95,7 +95,7 @@ export default function HomePage({ user }: userProps) {
   }
 
   return (
-    <div className="h-screen">
+    <div className="h-full">
       <div id="div-header">
         <h1 className="text-white text-3xl flex justify-center pt-8">
           Ecco i tuoi libri {user?.nome}

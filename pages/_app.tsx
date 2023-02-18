@@ -8,7 +8,7 @@ const queryClient = new QueryClient();
 export default function App({ Component, pageProps }: AppProps) {
   //
   return (
-    <div className="bg-zinc-800">
+    <div className="bg-zinc-800 h-full">
       <QueryClientProvider client={queryClient}>
         <Component {...pageProps} />
         <ReactQueryDevtools />
