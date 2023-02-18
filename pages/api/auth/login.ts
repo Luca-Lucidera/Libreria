@@ -21,11 +21,12 @@ export default async function handler(
       const user = await prisma.users.findFirst({
         where: {
           email: email,
+          password: password
         },
       });
 
       if (!user)
-        return res.status(404).json({ message: "Credenziali errate" });
+        return res.status(404).json({message: "Credenziali mancanti"});
 
       const expires = new Date(Date.now() + 3600000 * 24); //24 = numero di ore, 3600000: millisecondi == 1 ora
       const now = new Date();
