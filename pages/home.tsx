@@ -89,7 +89,6 @@ export default function HomePage({ user }: userProps) {
   if (libriQuery.isError) return <div>{libriQuery.error.message}</div>;
 
   const libri = libriQuery.data!;
-  console.log(libri)
   const headers = Object.keys(libri.at(0)!);
   function handleUpdateOrCreate() {
     if (updateModalClick) updateBook.mutate();
@@ -189,9 +188,9 @@ export default function HomePage({ user }: userProps) {
       <TableBody>
         {libri.map((libro, i) => (
           <TableRow key={libro.id!}>
-            {headers.map((k, i) =>
-              k !== "id" ? <TableCell key={i}>{libro[k]}</TableCell> : null
-            )}
+            {Object.entries(libro).map(([key, value ], i) => (
+              key !== "id" ? <TableCell key={i}>{value}</TableCell> : null 
+            ))}
           </TableRow>
         ))}
       </TableBody>
