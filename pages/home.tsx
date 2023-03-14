@@ -41,7 +41,7 @@ const libroVuoto: ILibro = {
 export default function HomePage({ user }: userProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
-
+  console.log('ENV', process.env.NEXT_PUBLIC_API_ROOT)
   const [updateModalClick, setUpdateModalClick] = useState(false);
   const [createModalClick, setCreateModalClick] = useState(false);
 

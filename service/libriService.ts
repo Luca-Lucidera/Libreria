@@ -4,7 +4,6 @@ import axios, { AxiosError } from "axios";
 
 export async function getUserLibri() {
   try {
-    console.log(process.env.API_ROOT_URL)
     const { data } = await axios.get<IApiResponse<ILibro[]>>(`${process.env.NEXT_PUBLIC_API_ROOT}/libri`, {
       withCredentials: true,
     });
