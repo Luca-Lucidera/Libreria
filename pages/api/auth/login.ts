@@ -16,7 +16,7 @@ export default async function handler(
         password: string;
       };
       if (!email || !password) {
-        return res.status(400).json({ message: "Body mancante" });
+        return res.status(400).json({ message: "Credenziali mancanti" });
       }
       const user = await prisma.users.findFirst({
         where: {
@@ -26,7 +26,7 @@ export default async function handler(
       });
 
       if (!user)
-        return res.status(404).json({message: "Credenziali mancanti"});
+        return res.status(404).json({message: "Errore nelle credenziali"});
 
       const expires = new Date(Date.now() + 3600000 * 24); //24 = numero di ore, 3600000: millisecondi == 1 ora
       const now = new Date();

@@ -1,6 +1,7 @@
 import ModalContent from "@/components/ModalContent";
 import Tabella from "@/components/Tabella/Tabella";
 import IApiResponse from "@/interfaces/IApiResponse";
+import style from "@/styles/home.module.css";
 import ILibro from "@/interfaces/ILibro";
 import IUser from "@/interfaces/user/IUser";
 import { createLibro, getUserLibri, updateLibro } from "@/service/libriService";
@@ -12,6 +13,14 @@ import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import Modal from "react-modal";
+import {
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+} from "@mui/material";
 
 Modal.setAppElement("#__next");
 
@@ -27,8 +36,8 @@ const libroVuoto: ILibro = {
   editore: "",
   status: "Da leggere",
   prezzo: 1,
-  id: ""
-}
+  id: "",
+};
 export default function HomePage({ user }: userProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -36,7 +45,9 @@ export default function HomePage({ user }: userProps) {
   const [updateModalClick, setUpdateModalClick] = useState(false);
   const [createModalClick, setCreateModalClick] = useState(false);
 
-  const [libroSelezionato, setLibroSelezionato] = useState<ILibro>({...libroVuoto});
+  const [libroSelezionato, setLibroSelezionato] = useState<ILibro>({
+    ...libroVuoto,
+  });
 
   const libriQuery = useQuery<ILibro[], Error>({
     queryKey: ["prendi-libri"],
@@ -59,7 +70,7 @@ export default function HomePage({ user }: userProps) {
       queryClient.invalidateQueries(["prendi-libri"]);
       setUpdateModalClick(false);
       setCreateModalClick(false);
-      setLibroSelezionato({...libroVuoto})
+      setLibroSelezionato({ ...libroVuoto });
     },
   });
 
@@ -70,19 +81,16 @@ export default function HomePage({ user }: userProps) {
       queryClient.invalidateQueries(["prendi-libri"]);
       setUpdateModalClick(false);
       setCreateModalClick(false);
-      setLibroSelezionato({...libroVuoto})
+      setLibroSelezionato({ ...libroVuoto });
     },
   });
 
-  if (libriQuery.isLoading)
-    return <div className="text-white text-2xl">Caricando i libri</div>;
-  if (libriQuery.isError)
-    return (
-      <div className="text-red-600 text-2xl">{libriQuery.error.message}</div>
-    );
+  if (libriQuery.isLoading) return <div>Caricando i libri</div>;
+  if (libriQuery.isError) return <div>{libriQuery.error.message}</div>;
 
   const libri = libriQuery.data!;
-
+  console.log(libri)
+  const headers = Object.keys(libri.at(0)!);
   function handleUpdateOrCreate() {
     if (updateModalClick) updateBook.mutate();
     else createBook.mutate();
@@ -91,93 +99,118 @@ export default function HomePage({ user }: userProps) {
   function handleClose() {
     setUpdateModalClick(false);
     setCreateModalClick(false);
-    setLibroSelezionato({...libroVuoto})
+    setLibroSelezionato({ ...libroVuoto });
   }
 
   return (
-    <div className="h-full">
-      <div id="div-header">
-        <h1 className="text-white text-3xl flex justify-center pt-8">
-          Ecco i tuoi libri {user?.nome}
-        </h1>
-      </div>
-      <div id="tabella-o-p">
-        {libri?.length == 0 ? (
-          <p className="flex justify-center text-xl text-white pt-8">
-            Non ci sono libri ☹️
-          </p>
-        ) : (
-          <Tabella
-            libri={libri!}
-            setLibroDaSelezionare={setLibroSelezionato}
-            setUpdateModalClick={setUpdateModalClick}
-          />
-        )}
-      </div>
-      <div>
-        <button
-          onClick={() => setCreateModalClick(true)}
-          className="text-white text-xl mt-10 ml-4 border-solid border-4 hover:border-green-800 bg-green-600 border-green-700 rounded-md p-1"
-        >
-          Nuovo libro
-        </button>
-      </div>
-      <button
-        className="text-white text-xl mt-10 ml-4 border-solid border-4 hover:border-red-900 bg-red-600 border-red-700 rounded-md p-1"
-        onClick={() => logoutMutation.mutate()}
-      >
-        Logout
-      </button>
-      <Modal
-        isOpen={updateModalClick || createModalClick}
-        onRequestClose={handleClose}
-        style={{
-          content: {
-            backgroundColor: "#27272A",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
-            width: "50%",
-            height: "70%",
-            margin: "auto",
-          },
-          overlay: {
-            backgroundColor: "rgba(0,0,0,0.5)",
-          },
-        }}
-      >
-        <ModalContent
-          libro={libroSelezionato}
-          setLibroSelezionato={setLibroSelezionato}
-        />
-        <div className="pt-4">
-          <button
-            onClick={handleUpdateOrCreate}
-            className="text-white text-2xl rounded p-1 bg-green-700 hover:border-solid hover:shadow-xl"
-          >
-            Salva
-          </button>
-          <button
-            onClick={handleClose}
-            className="text-white text-2xl ml-4 p-1 rounded bg-red-700 hover:shadow-xl "
-          >
-            Chiudi senza salvare
-          </button>
-        </div>
-      </Modal>
-    </div>
+    // <div className="h-full">
+    //   <div id="div-header">
+    //     <h1 className="text-white text-3xl flex justify-center pt-8">
+    //       Ecco i tuoi libri {user?.nome}
+    //     </h1>
+    //   </div>
+    //   <div id="tabella-o-p">
+    //     {libri?.length == 0 ? (
+    //       <p className="flex justify-center text-xl text-white pt-8">
+    //         Non ci sono libri ☹️
+    //       </p>
+    //     ) : (
+    //       <Tabella
+    //         libri={libri!}
+    //         setLibroDaSelezionare={setLibroSelezionato}
+    //         setUpdateModalClick={setUpdateModalClick}
+    //       />
+    //     )}
+    //   </div>
+    //   <div>
+    //     <button
+    //       onClick={() => setCreateModalClick(true)}
+    //       className="text-white text-xl mt-10 ml-4 border-solid border-4 hover:border-green-800 bg-green-600 border-green-700 rounded-md p-1"
+    //     >
+    //       Nuovo libro
+    //     </button>
+    //   </div>
+    //   <button
+    //     className="text-white text-xl mt-10 ml-4 border-solid border-4 hover:border-red-900 bg-red-600 border-red-700 rounded-md p-1"
+    //     onClick={() => logoutMutation.mutate()}
+    //   >
+    //     Logout
+    //   </button>
+    //   <Modal
+    //     isOpen={updateModalClick || createModalClick}
+    //     onRequestClose={handleClose}
+    //     style={{
+    //       content: {
+    //         backgroundColor: "#27272A",
+    //         display: "flex",
+    //         flexDirection: "column",
+    //         justifyContent: "center",
+    //         alignItems: "center",
+    //         width: "50%",
+    //         height: "70%",
+    //         margin: "auto",
+    //       },
+    //       overlay: {
+    //         backgroundColor: "rgba(0,0,0,0.5)",
+    //       },
+    //     }}
+    //   >
+    //     <ModalContent
+    //       libro={libroSelezionato}
+    //       setLibroSelezionato={setLibroSelezionato}
+    //     />
+    //     <div className="pt-4">
+    //       <button
+    //         onClick={handleUpdateOrCreate}
+    //         className="text-white text-2xl rounded p-1 bg-green-700 hover:border-solid hover:shadow-xl"
+    //       >
+    //         Salva
+    //       </button>
+    //       <button
+    //         onClick={handleClose}
+    //         className="text-white text-2xl ml-4 p-1 rounded bg-red-700 hover:shadow-xl "
+    //       >
+    //         Chiudi senza salvare
+    //       </button>
+    //     </div>
+    //   </Modal>
+    // </div>
+
+    <Table sx={{ maxWidth: 600, margin: "auto" }} stickyHeader>
+      <TableHead color="primary">
+        <TableRow>
+          {headers.map((header) =>
+            header !== "id" ? (
+              <TableCell key={header}>{header}</TableCell>
+            ) : null
+          )}
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {libri.map((libro, i) => (
+          <TableRow key={libro.id!}>
+            {headers.map((k, i) =>
+              k !== "id" ? <TableCell key={i}>{libro[k]}</TableCell> : null
+            )}
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   );
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
-  if (!req.cookies.session) return { props: {} };
-  const { status, data } = await axios.get("https://la-tua-libreria.vercel.app/api/auth/session", {
-    withCredentials: true,
-    headers: {
-      cookie: serialize("session", req.cookies.session),
+  if (!req.cookies.session)
+    return { redirect: { permanent: false, destination: "/" }, props: {} };
+  const { status, data } = await axios.get(
+    `${process.env.NEXT_PUBLIC_API_ROOT}/auth/session`,
+    {
+      withCredentials: true,
+      headers: {
+        cookie: serialize("session", req.cookies.session),
+      },
     }
-  })
+  );
   if (status != 200)
     return { redirect: { permanent: false, destination: "/" }, props: {} };
   return {

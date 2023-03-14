@@ -11,7 +11,7 @@ export async function register({
   password,
 }: IUserRegisterDTO) {
   try {
-    const { data } = await axios.post<IApiResponse<IUser>>("https://la-tua-libreria.vercel.app/api/auth/register",{ nome, cognome, email, password });
+    const { data } = await axios.post<IApiResponse<IUser>>(`${process.env.NEXT_PUBLIC_API_ROOT}/auth/register`,{ nome, cognome, email, password });
     return "ok";
   } catch (error: any) {
     const axiosError: AxiosError<IApiResponse<IUser>> = error;
@@ -21,29 +21,16 @@ export async function register({
 
 export async function login({ email, password }: UserLoginDTO) {
   try {
-    const { data } = await axios.post<IApiResponse<IUser>>("https://la-tua-libreria.vercel.app/api/auth/login", { email, password });
+    const { data } = await axios.post<IApiResponse<IUser>>(`${process.env.NEXT_PUBLIC_API_ROOT}/auth/login`, { email, password });
     return data.data!;
   } catch (error: any) {
     const axiosError: AxiosError<IApiResponse<IUser>> = error;
     throw new Error(axiosError.response!.data.message);
   }
 }
-
-export async function getUserWithSession() {
-  try {
-    const { data } = await axios.get<IApiResponse<IUser>>("https://la-tua-libreria.vercel.app/api/auth/session", {
-      withCredentials: true,
-    });
-    return data.data;
-  } catch (error: any) {
-    const axiosError: AxiosError<IApiResponse<IUser>> = error;
-    throw new Error(axiosError.response!.data.message);
-  }
-}
-
 export async function logout() {
   try {
-    const { data } = await axios.delete<IApiResponse<any>>("https://la-tua-libreria.vercel.app/api/auth/logout", {
+    const { data } = await axios.delete<IApiResponse<any>>(`${process.env.NEXT_PUBLIC_API_ROOT}/auth/logout`, {
       withCredentials: true,
     });
     return data.data;
