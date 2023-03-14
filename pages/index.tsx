@@ -101,7 +101,7 @@ export default function Home() {
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   if (!req.cookies.session) return { props: {} };
   const { status } = await axios.get(
-    `/api/auth/session`,
+    `api/auth/session`,
     {
       withCredentials: true,
       headers: {

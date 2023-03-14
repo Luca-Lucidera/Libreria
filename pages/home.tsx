@@ -204,7 +204,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
     return { redirect: { permanent: false, destination: "/" }, props: {} };
   console.log('FETCH DATI UTENTE')
     const { status, data } = await axios.get(
-    `/api/auth/session`,
+    `api/auth/session`,
     {
       withCredentials: true,
       headers: {
