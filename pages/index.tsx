@@ -101,7 +101,7 @@ export default function Home() {
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   if (!req.cookies.session) return { props: {} };
   const { status } = await axios.get(
-    `api/auth/session`,
+    `https://libreria-git-publish-test-lucalucidera.vercel.app/api/auth/session`,
     {
       withCredentials: true,
       headers: {

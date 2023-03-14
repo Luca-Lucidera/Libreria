@@ -199,12 +199,10 @@ export default function HomePage({ user }: userProps) {
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
-  console.log('ENTRO IN SERVER SIDE PROPS')
   if (!req.cookies.session)
     return { redirect: { permanent: false, destination: "/" }, props: {} };
-  console.log('FETCH DATI UTENTE')
     const { status, data } = await axios.get(
-    `api/auth/session`,
+    `https://libreria-git-publish-test-lucalucidera.vercel.app/api/auth/session`,
     {
       withCredentials: true,
       headers: {
