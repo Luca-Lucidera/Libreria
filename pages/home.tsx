@@ -199,36 +199,25 @@ export default function HomePage({ user }: userProps) {
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
-  // console.log('ENTRO IN SERVER SIDE PROPS')
-  // if (!req.cookies.session)
-  //   return { redirect: { permanent: false, destination: "/" }, props: {} };
-  // console.log('FETCH DATI UTENTE')
-  //   const { status, data } = await axios.get(
-  //   `${process.env.NEXT_PUBLIC_API_ROOT}/auth/session`,
-  //   {
-  //     withCredentials: true,
-  //     headers: {
-  //       cookie: serialize("session", req.cookies.session),
-  //     },
-  //   }
-  // );
-  // console.log('SONO HO PASSATO IL FETCH')
-  // if (status != 200)
-  //   return { redirect: { permanent: false, destination: "/" }, props: {} };
-  // return {
-  //   props: {
-  //     user: data.data,
-  //   },
-  // };
-  return {
-    props: { 
-      user: {
-        id: "63e219477a583146a1b784c1",
-        nome: "luca",
-        cognome: "lucidera",
-        email: "luca@luca",
-        password: "luca1234"
-      }
+  console.log('ENTRO IN SERVER SIDE PROPS')
+  if (!req.cookies.session)
+    return { redirect: { permanent: false, destination: "/" }, props: {} };
+  console.log('FETCH DATI UTENTE')
+    const { status, data } = await axios.get(
+    `/api/auth/session`,
+    {
+      withCredentials: true,
+      headers: {
+        cookie: serialize("session", req.cookies.session),
+      },
     }
-  }
+  );
+  console.log('SONO HO PASSATO IL FETCH')
+  if (status != 200)
+    return { redirect: { permanent: false, destination: "/" }, props: {} };
+  return {
+    props: {
+      user: data.data,
+    },
+  };
 };
