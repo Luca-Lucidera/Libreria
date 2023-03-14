@@ -202,7 +202,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   if (!req.cookies.session)
     return { redirect: { permanent: false, destination: "/" }, props: {} };
     const { status, data } = await axios.get(
-    `la-tua-libreria.vercel.app/api/auth/session`,
+    `https://la-tua-libreria.vercel.app/api/auth/session`,
     {
       withCredentials: true,
       headers: {
