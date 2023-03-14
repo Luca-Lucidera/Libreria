@@ -199,9 +199,11 @@ export default function HomePage({ user }: userProps) {
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
+  console.log('ENTRO IN SERVER SIDE PROPS')
   if (!req.cookies.session)
     return { redirect: { permanent: false, destination: "/" }, props: {} };
-  const { status, data } = await axios.get(
+  console.log('FETCH DATI UTENTE')
+    const { status, data } = await axios.get(
     `${process.env.NEXT_PUBLIC_API_ROOT}/auth/session`,
     {
       withCredentials: true,
@@ -210,6 +212,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
       },
     }
   );
+  console.log('SONO HO PASSATO IL FETCH')
   if (status != 200)
     return { redirect: { permanent: false, destination: "/" }, props: {} };
   return {

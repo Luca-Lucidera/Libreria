@@ -24,7 +24,7 @@ export default function Home() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
-
+  console.log("PROCESS.ENV.NEXT_PUBLIC_API_ROOT", process.env.NEXT_PUBLIC_API_ROOT)
   const loginMutation = useMutation<IUser, Error>({
     mutationFn: async () => await login({ email, password }),
     onSuccess: (user) => {
