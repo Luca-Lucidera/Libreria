@@ -1,3 +1,5 @@
-.page_div {
-    min-height: 100%;
+.div_pagina {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
 }

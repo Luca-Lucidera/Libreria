@@ -20,7 +20,11 @@ import {
   TableCell,
   TableHead,
   TableRow,
+  Dialog,
+  Typography
 } from "@mui/material";
+import ClearIcon from "@mui/icons-material/Clear";
+import SettingsIcon from "@mui/icons-material/Settings";
 
 Modal.setAppElement("#__next");
 
@@ -41,9 +45,9 @@ const libroVuoto: ILibro = {
 export default function HomePage({ user }: userProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
-  console.log('ENV', process.env.NEXT_PUBLIC_API_ROOT)
-  const [updateModalClick, setUpdateModalClick] = useState(false);
-  const [createModalClick, setCreateModalClick] = useState(false);
+  
+  const [openModal, setOpenModal] = useState(false);
+  const [isNewBook, setIsNewBook] = useState(false);
 
   const [libroSelezionato, setLibroSelezionato] = useState<ILibro>({
     ...libroVuoto,
@@ -68,8 +72,6 @@ export default function HomePage({ user }: userProps) {
     mutationFn: async () => await updateLibro(libroSelezionato),
     onSuccess: () => {
       queryClient.invalidateQueries(["prendi-libri"]);
-      setUpdateModalClick(false);
-      setCreateModalClick(false);
       setLibroSelezionato({ ...libroVuoto });
     },
   });
@@ -79,8 +81,6 @@ export default function HomePage({ user }: userProps) {
     mutationFn: async () => await createLibro(libroSelezionato),
     onSuccess: () => {
       queryClient.invalidateQueries(["prendi-libri"]);
-      setUpdateModalClick(false);
-      setCreateModalClick(false);
       setLibroSelezionato({ ...libroVuoto });
     },
   });
@@ -90,119 +90,90 @@ export default function HomePage({ user }: userProps) {
 
   const libri = libriQuery.data!;
   const headers = Object.keys(libri.at(0)!);
-  function handleUpdateOrCreate() {
-    if (updateModalClick) updateBook.mutate();
-    else createBook.mutate();
+
+  function handleNewBook() {
+    setOpenModal(true);
+    setIsNewBook(true)
+  }
+
+  function handleChangeBook() {
+    setOpenModal(true);
+    setIsNewBook(false);
+  }
+
+  function handleDeleteBook(id: string) {
+
   }
 
   function handleClose() {
-    setUpdateModalClick(false);
-    setCreateModalClick(false);
-    setLibroSelezionato({ ...libroVuoto });
+    setOpenModal(false);
+    setIsNewBook(false);
   }
 
-  return (
-    // <div className="h-full">
-    //   <div id="div-header">
-    //     <h1 className="text-white text-3xl flex justify-center pt-8">
-    //       Ecco i tuoi libri {user?.nome}
-    //     </h1>
-    //   </div>
-    //   <div id="tabella-o-p">
-    //     {libri?.length == 0 ? (
-    //       <p className="flex justify-center text-xl text-white pt-8">
-    //         Non ci sono libri ☹️
-    //       </p>
-    //     ) : (
-    //       <Tabella
-    //         libri={libri!}
-    //         setLibroDaSelezionare={setLibroSelezionato}
-    //         setUpdateModalClick={setUpdateModalClick}
-    //       />
-    //     )}
-    //   </div>
-    //   <div>
-    //     <button
-    //       onClick={() => setCreateModalClick(true)}
-    //       className="text-white text-xl mt-10 ml-4 border-solid border-4 hover:border-green-800 bg-green-600 border-green-700 rounded-md p-1"
-    //     >
-    //       Nuovo libro
-    //     </button>
-    //   </div>
-    //   <button
-    //     className="text-white text-xl mt-10 ml-4 border-solid border-4 hover:border-red-900 bg-red-600 border-red-700 rounded-md p-1"
-    //     onClick={() => logoutMutation.mutate()}
-    //   >
-    //     Logout
-    //   </button>
-    //   <Modal
-    //     isOpen={updateModalClick || createModalClick}
-    //     onRequestClose={handleClose}
-    //     style={{
-    //       content: {
-    //         backgroundColor: "#27272A",
-    //         display: "flex",
-    //         flexDirection: "column",
-    //         justifyContent: "center",
-    //         alignItems: "center",
-    //         width: "50%",
-    //         height: "70%",
-    //         margin: "auto",
-    //       },
-    //       overlay: {
-    //         backgroundColor: "rgba(0,0,0,0.5)",
-    //       },
-    //     }}
-    //   >
-    //     <ModalContent
-    //       libro={libroSelezionato}
-    //       setLibroSelezionato={setLibroSelezionato}
-    //     />
-    //     <div className="pt-4">
-    //       <button
-    //         onClick={handleUpdateOrCreate}
-    //         className="text-white text-2xl rounded p-1 bg-green-700 hover:border-solid hover:shadow-xl"
-    //       >
-    //         Salva
-    //       </button>
-    //       <button
-    //         onClick={handleClose}
-    //         className="text-white text-2xl ml-4 p-1 rounded bg-red-700 hover:shadow-xl "
-    //       >
-    //         Chiudi senza salvare
-    //       </button>
-    //     </div>
-    //   </Modal>
-    // </div>
+  // function handleUpdateOrCreate() {
+  //   if (updateModalClick) updateBook.mutate();
+  //   else createBook.mutate();
+  // }
 
-    <Table sx={{ maxWidth: 600, margin: "auto" }} stickyHeader>
-      <TableHead color="primary">
-        <TableRow>
-          {headers.map((header) =>
-            header !== "id" ? (
-              <TableCell key={header}>{header}</TableCell>
-            ) : null
-          )}
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {libri.map((libro, i) => (
-          <TableRow key={libro.id!}>
-            {Object.entries(libro).map(([key, value ], i) => (
-              key !== "id" ? <TableCell key={i}>{value}</TableCell> : null 
-            ))}
+  // function handleClose() {
+  //   setUpdateModalClick(false);
+  //   setCreateModalClick(false);
+  //   setLibroSelezionato({ ...libroVuoto });
+  // }
+
+  return (
+    <div className={style.div_pagina}>
+      <Button sx={{ top: "50%", left: "15%", position: "fixed"}} onClick={handleNewBook}>Nuovo libro</Button>
+      <Table sx={{ maxWidth: "50%" }} stickyHeader>
+        <TableHead color="primary" sx={{ margin: "auto" }}>
+          <TableRow>
+            {headers.map((header) =>
+              header !== "id" ? (
+                <TableCell key={header} align="center">
+                  {header}
+                </TableCell>
+              ) : null
+            )}
+            <TableCell>Modifica</TableCell>
+            <TableCell>Elimina</TableCell>
           </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+        </TableHead>
+        <TableBody>
+          {libri.map((libro, i) => (
+            <TableRow key={libro.id!}>
+              {Object.entries(libro).map(([key, value], i) =>
+                key !== "id" ? (
+                  <TableCell key={i} align="center">
+                    {value}
+                  </TableCell>
+                ) : null
+              )}
+              <TableCell>
+                <Button onClick={handleChangeBook}>
+                  <SettingsIcon color="success"/>
+                </Button>
+              </TableCell>
+              <TableCell>
+                <Button onClick={() => handleDeleteBook(libro.id!)}>
+                  <ClearIcon color="error"/>
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+      <Dialog open={openModal} onClose={handleClose}>
+        <Typography>{isNewBook ? "Aggiungi un nuovo libro alla tua collezione" : `Libro scelto: ${libroSelezionato.titolo}`}</Typography>
+      </Dialog>
+    </div>
   );
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   if (!req.cookies.session)
     return { redirect: { permanent: false, destination: "/" }, props: {} };
-    const { status, data } = await axios.get(
-    `https://la-tua-libreria.vercel.app/api/auth/session`,
+  const { status, data } = await axios.get(
+    `${process.env.NEXT_PUBLIC_API_ROOT}/auth/session`,
     {
       withCredentials: true,
       headers: {
