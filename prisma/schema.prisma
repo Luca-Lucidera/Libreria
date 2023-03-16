@@ -7,34 +7,30 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Users {
-  id       String  @id @default(auto()) @map("_id") @db.ObjectId
-  nome     String
-  cognome  String
-  email    String  @unique
-  password String
-  Logins   Logins?
-  Libreria Libri[]
+model Libri {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  comprati BigInt
+  editore  String
+  letti    BigInt
+  prezzo   Float
+  status   String
+  tipo     String
+  titolo   String
+  userId   String @db.ObjectId
 }
 
 model Logins {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  expires     DateTime @db.Date
+  lastLogin   DateTime @db.Date
   sessionUUID String
-  expires     DateTime
   userId      String   @unique @db.ObjectId
-  lastLogin   DateTime
-  User        Users    @relation(fields: [userId], references: [id])
 }
 
-model Libri {
+model Users {
   id       String @id @default(auto()) @map("_id") @db.ObjectId
-  userId   String @db.ObjectId
-  titolo   String
-  comprati Int
-  letti    Int
-  tipo     String
-  editore  String
-  status   String
-  prezzo   Float
-  User     Users  @relation(fields: [userId], references: [id])
+  cognome  String
+  email    String @unique
+  nome     String
+  password String
 }

@@ -1,5 +1,18 @@
 .div_pagina {
+    height: 100%;
+}
+
+.table_container::-webkit-scrollbar {
+    display: none;
+}
+.table_container {
+    height: 50vh;
+    width: 50%;
+}
+
+.div_loading {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: center;
+    height: 100%;
 }

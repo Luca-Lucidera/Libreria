@@ -15,7 +15,6 @@ import {
   Card,
   CardActions,
   CardContent,
-  ButtonGroup,
   Backdrop,
   CircularProgress,
 } from "@mui/material";
@@ -23,11 +22,19 @@ import {
 export default function Home() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [spinLoading, setSpinLoading] = useState(false)
   const router = useRouter();
   const loginMutation = useMutation<IUser, Error>({
-    mutationFn: async () => await login({ email, password }),
+    mutationFn: async () => {
+      setSpinLoading(true)
+      return await login({ email, password })
+    },
     onSuccess: (user) => {
+      setSpinLoading(false)
       router.push("/home");
+    },
+    onError: () => {
+      setSpinLoading(false)
     },
     cacheTime: 0,
   });
@@ -89,7 +96,7 @@ export default function Home() {
         </CardContent>
       </Card>
       <Backdrop
-        open={loginMutation.isLoading}
+        open={spinLoading}
       >
         <CircularProgress color="inherit" />
       </Backdrop>
