@@ -106,18 +106,24 @@ export default function Home() {
 
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   if (!req.cookies.session) return { props: {} };
-  const { status } = await axios.get(
-    `${process.env.NEXT_PUBLIC_API_ROOT}/auth/session`,
-    {
-      withCredentials: true,
-      headers: {
-        cookie: serialize("session", req.cookies.session),
-      },
-    }
-  );
-  if (status == 200)
-    return { redirect: { permanent: false, destination: "/home" }, props: {} };
-  return {
-    props: {},
-  };
+  try {
+    const { status } = await axios.get(
+      `${process.env.NEXT_PUBLIC_API_ROOT}/auth/session`,
+      {
+        withCredentials: true,
+        headers: {
+          cookie: serialize("session", req.cookies.session),
+        },
+      }
+    );
+    if (status == 200)
+      return { redirect: { permanent: false, destination: "/home" }, props: {} };
+    return {
+      props: {},
+    };
+  } catch (error) {
+    console.log('ERRORE:', error)
+    return { props: {}};
+  }
+  
 };

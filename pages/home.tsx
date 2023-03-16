@@ -89,7 +89,7 @@ export default function HomePage({ user }: userProps) {
       queryClient.invalidateQueries(["prendi-libri"]);
       setLibroSelezionato({ ...libroVuoto });
       setOpenModal(false);
-      setIsNewBook(false)
+      setIsNewBook(false);
     },
   });
 
@@ -100,7 +100,7 @@ export default function HomePage({ user }: userProps) {
       queryClient.invalidateQueries(["prendi-libri"]);
       setLibroSelezionato({ ...libroVuoto });
       setOpenModal(false);
-      setIsNewBook(false)
+      setIsNewBook(false);
     },
   });
 
@@ -122,7 +122,11 @@ export default function HomePage({ user }: userProps) {
           alignItems="center"
           minHeight="100vh"
         >
-          <Button onClick={handleNewBook} variant={"contained"} sx={{marginRight: "5%"}}>
+          <Button
+            onClick={handleNewBook}
+            variant={"contained"}
+            sx={{ marginRight: "5%" }}
+          >
             Nuovo libro
           </Button>
           <Button
@@ -258,7 +262,7 @@ export default function HomePage({ user }: userProps) {
     setLibroSelezionato(libro);
   }
 
-  function handleDeleteBook(id: string) {}
+  function handleDeleteBook(id: string) { }
 
   function handleCloseWithoutSave() {
     setOpenModal(false);
@@ -534,20 +538,24 @@ export default function HomePage({ user }: userProps) {
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   if (!req.cookies.session)
     return { redirect: { permanent: false, destination: "/" }, props: {} };
-  const { status, data } = await axios.get(
-    `${process.env.NEXT_PUBLIC_API_ROOT}/auth/session`,
-    {
-      withCredentials: true,
-      headers: {
-        cookie: serialize("session", req.cookies.session),
+  try {
+    const { status, data } = await axios.get(
+      `${process.env.NEXT_PUBLIC_API_ROOT}/auth/session`,
+      {
+        withCredentials: true,
+        headers: {
+          cookie: serialize("session", req.cookies.session),
+        },
+      }
+    );
+    if (status != 200)
+      return { redirect: { permanent: false, destination: "/" }, props: {} };
+    return {
+      props: {
+        user: data.data,
       },
-    }
-  );
-  if (status != 200)
+    };
+  } catch (error) {
     return { redirect: { permanent: false, destination: "/" }, props: {} };
-  return {
-    props: {
-      user: data.data,
-    },
-  };
+  }
 };
