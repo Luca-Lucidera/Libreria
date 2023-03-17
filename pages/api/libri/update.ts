@@ -18,15 +18,15 @@ export default async function handler(
         },
         select: {
           expires: true,
-          User: true,
+          userId: true
         },
       });
       if (!data)
         return res.status(302).json({ message: "sessione non trovata" });
-      const { User: user, expires } = data!;
+      const { userId, expires } = data!;
       if (new Date() > expires)
         return res.status(302).json({ message: "sessione scaduta" });
-      if (!user) return res.status(302).json({ message: "utente non trovato" });
+      if (!userId) return res.status(302).json({ message: "utente non trovato" });
       const libro = req.body.libro as ILibro;
       if (!libro)
         return res.status(400).json({ message: "Inserire il libro nuovo" });

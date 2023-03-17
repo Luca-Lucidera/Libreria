@@ -18,19 +18,27 @@ export default async function handler(
         },
         select: {
           expires: true,
-          User: true,
+          userId: true,
         },
       });
-      if(!data) return res.status(302).json({ message: "sessione non trovata" })
-      const { User: user, expires } = data!
-      if(new Date() > expires) return res.status(302).json({ message: "sessione scaduta" })
-      if(!user) return res.status(302).json({ message: "utente non trovato" })
-      const libro = req.body.libro as ILibro
-      console.log("Libro:", libro)
-      if(!libro) return res.status(400).json({ message: "Inserire il libro nuovo"})
-      const libreria = await prisma.libri.findMany({ where: { userId: user.id }}) as ILibro[]
-      const libroTrovato = libreria.find((l) => l.titolo.toLowerCase().includes(libro.titolo.toLowerCase()))
-      if(libroTrovato) return res.status(400).json({ message: "Il libro inserito c'è già"})
+      if (!data)
+        return res.status(302).json({ message: "sessione non trovata" });
+      const { userId, expires } = data!;
+      if (new Date() > expires)
+        return res.status(302).json({ message: "sessione scaduta" });
+      if (!userId)
+        return res.status(302).json({ message: "utente non trovato" });
+      const libro = req.body.libro as ILibro;
+      if (!libro)
+        return res.status(400).json({ message: "Inserire il libro nuovo" });
+      const libreria = (await prisma.libri.findMany({
+        where: { userId: userId },
+      })) as ILibro[];
+      const libroTrovato = libreria.find((l) =>
+        l.titolo.toLowerCase().includes(libro.titolo.toLowerCase())
+      );
+      if (libroTrovato)
+        return res.status(400).json({ message: "Il libro inserito c'è già" });
       const libroCreato = await prisma.libri.create({
         data: {
           comprati: libro.comprati,
@@ -40,14 +48,19 @@ export default async function handler(
           status: libro.status,
           tipo: libro.tipo,
           titolo: libro.titolo,
-          userId: user.id
-        }
-      })
-      if(!libroCreato) return res.status(404).json({ message: "Errore nella creazione del libro"})
-      return res.status(200).json({ message: "ok"})
+          userId: userId,
+        },
+      });
+      if (!libroCreato)
+        return res
+          .status(404)
+          .json({ message: "Errore nella creazione del libro" });
+      return res.status(200).json({ message: "ok" });
     } catch (error) {
       console.error(error);
-      return res.status(500).json({ message: "Errore interno al server, ci scusiamo per il disagio" });
+      return res.status(500).json({
+        message: "Errore interno al server, ci scusiamo per il disagio",
+      });
     }
   } else {
     return res.status(405).json({ message: "ACCETTA SOLO POST" });

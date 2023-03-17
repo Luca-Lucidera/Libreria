@@ -19,7 +19,7 @@ export default async function handler(
         },
         select: {
           expires: true,
-          User: true,
+          userId: true,
         },
       });
 
@@ -34,18 +34,21 @@ export default async function handler(
       if (!data)
         return res.status(302).json({ message: "sessione non trovata" });
 
-      const { User: user, expires } = data!;
+      const { expires, userId } = data!;
       if (new Date() > expires)
         return res.status(302).json({ message: "sessione scaduta" });
-      if (!user) return res.status(302).json({ message: "utente non trovato" });
-      return res.status(200).json({ data: user });
+
+      if (!userId)
+        return res.status(302).json({ message: "utente non trovato" });
+      const utente = await prisma.users.findFirst({ where: { id: userId } });
+      if (!utente)
+        return res.status(302).json({ message: "utente non trovato" });
+      return res.status(200).json({ data: utente });
     } catch (error) {
       console.error(error);
-      return res
-        .status(500)
-        .json({
-          message: "Errore interno al server, ci scusiamo per il disagio",
-        });
+      return res.status(500).json({
+        message: "Errore interno al server, ci scusiamo per il disagio",
+      });
     }
   } else {
     return res.status(405).json({ message: "ACCETTA SOLO GET" });

@@ -10,7 +10,7 @@ export default function App({ Component, pageProps }: AppProps) {
   const theme = createTheme({
     palette: {
       mode: "dark",
-    }
+    },
   });
   return (
     <ThemeProvider theme={theme}>

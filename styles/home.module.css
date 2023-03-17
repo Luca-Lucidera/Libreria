@@ -1,18 +1,3 @@
-.div_pagina {
-    height: 100%;
-}
-
 .table_container::-webkit-scrollbar {
     display: none;
-}
-.table_container {
-    height: 50vh;
-    width: 50% !important;
-}
-
-.div_loading {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
 }

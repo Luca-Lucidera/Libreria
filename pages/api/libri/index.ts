@@ -17,12 +17,14 @@ export default async function handler(
         },
         select: {
           expires: true,
-          User: true,
+          userId: true,
         },
       });
       if(!data) return res.status(302).json({ message: "sessione non trovata" })
-      const { User: user, expires } = data!
+      const { expires, userId } = data!
       if(new Date() > expires) return res.status(302).json({ message: "sessione scaduta" })
+      if(!userId) return res.status(302).json({ message: "utente non trovato" })
+      const user = await prisma.users.findFirst({ where: { id: userId } })
       if(!user) return res.status(302).json({ message: "utente non trovato" })
       const libri = await prisma.libri.findMany({ 
         where: {
@@ -38,7 +40,7 @@ export default async function handler(
           status: true,
           prezzo: true,
         }
-      }) as ILibro[]
+      }) as ILibro[];
       return res.status(200).json({data: libri})
     } catch (error) {
       console.error(error);

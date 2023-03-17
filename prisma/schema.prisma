@@ -9,13 +9,13 @@ datasource db {
 
 model Libri {
   id       String @id @default(auto()) @map("_id") @db.ObjectId
-  comprati BigInt
+  titolo   String
+  comprati Int
+  tipo     String
+  letti    Int
   editore  String
-  letti    BigInt
   prezzo   Float
   status   String
-  tipo     String
-  titolo   String
   userId   String @db.ObjectId
 }
 
