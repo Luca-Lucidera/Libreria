@@ -4,6 +4,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { randomUUID } from "crypto";
 import IApiResponse from "@/model/ApiResponse";
 import IUser from "@/model/user/IUser";
+import { setSessionCookie } from "@/service/server/authService";
 
 export default async function handler(
   req: NextApiRequest,
@@ -21,50 +22,33 @@ export default async function handler(
       const user = await prisma.users.findFirst({
         where: {
           email: email,
-          password: password
+          password: password,
         },
       });
 
-      if (!user)
-        return res.status(404).json({message: "Errore nelle credenziali"});
+      if (!user) {
+        return res.status(404).json({ message: "Errore nelle credenziali" });
+      }
 
-      const expires = new Date(Date.now() + 3600000 * 24); //24 = numero di ore, 3600000: millisecondi == 1 ora
-      const now = new Date();
-      const sessionUUID = randomUUID();
-      const sessionCookie = cookie.serialize("session", sessionUUID, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "lax",
-        expires: expires,
-        path: "/",
-      });
+      const data = await setSessionCookie(user);
 
-      await prisma.logins.upsert({
-        create: {
-          userId: user.id,
-          sessionUUID: sessionUUID,
-          expires: expires,
-          lastLogin: now,
-        },
-        update: {
-          sessionUUID: sessionUUID,
-          expires: expires,
-          lastLogin: new Date(),
-        },
-        where: {
-          userId: user.id
-        },
-      });
-      
+      if (data.isError) {
+        return res
+          .status(400)
+          .json({ message: data.message! });
+      }
+
       return res
-        .setHeader("Set-Cookie", sessionCookie)
+        .setHeader("Set-Cookie", data.data!)
         .status(200)
         .json({ data: user });
     } catch (error) {
-      console.error(error);
-      return res.status(500).json({message: "Errore interno al server, ci scusiamo per il disagio"});
+      console.error("/auth/login error", error);
+      return res.status(500).json({
+        message: "Errore interno al server, ci scusiamo per il disagio",
+      });
     }
   } else {
-    return res.status(405).json({ message: "Il metodo accetta solo POST"})
+    return res.status(405).json({ message: "Il metodo accetta solo POST" });
   }
 }

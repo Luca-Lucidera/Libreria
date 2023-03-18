@@ -1,5 +1,6 @@
 import IApiResponse from "@/model/ApiResponse";
 import IUser from "@/model/user/IUser";
+import { checkSession } from "@/service/server/authService";
 import { prisma } from "@/utils/prisma";
 import { serialize } from "cookie";
 import { NextApiRequest, NextApiResponse } from "next";
@@ -11,39 +12,16 @@ export default async function handler(
   if (req.method === "GET") {
     try {
       const sessionUUID = req.cookies.session;
-      if (!sessionUUID)
+      if (!sessionUUID) {
         return res.status(302).json({ message: "uuid non trovato" });
-      const data = await prisma.logins.findFirst({
-        where: {
-          sessionUUID: sessionUUID,
-        },
-        select: {
-          expires: true,
-          userId: true,
-        },
-      });
+      }
 
-      const date = new Date();
-      date.setDate(date.getDate() - 2);
-      const sessionRemoved = serialize("session", "", {
-        expires: date,
-        path: "/",
-      });
-      res.setHeader("Set-Cookie", sessionRemoved);
+      const data = await checkSession(sessionUUID);
+      if (data.isError) {
+        return res.status(302).json({ message: data.message! });
+      }
 
-      if (!data)
-        return res.status(302).json({ message: "sessione non trovata" });
-
-      const { expires, userId } = data!;
-      if (new Date() > expires)
-        return res.status(302).json({ message: "sessione scaduta" });
-
-      if (!userId)
-        return res.status(302).json({ message: "utente non trovato" });
-      const utente = await prisma.users.findFirst({ where: { id: userId } });
-      if (!utente)
-        return res.status(302).json({ message: "utente non trovato" });
-      return res.status(200).json({ data: utente });
+      return res.status(200).json({ data: data.data });
     } catch (error) {
       console.error(error);
       return res.status(500).json({

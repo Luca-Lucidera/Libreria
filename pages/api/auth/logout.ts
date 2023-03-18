@@ -1,5 +1,6 @@
 import IApiResponse from "@/model/ApiResponse";
-import {prisma} from "@/utils/prisma";
+import { logout } from "@/service/server/authService";
+import { prisma } from "@/utils/prisma";
 import { serialize } from "cookie";
 import { NextApiRequest, NextApiResponse } from "next";
 
@@ -8,33 +9,29 @@ export default async function handler(
   res: NextApiResponse<IApiResponse<any>>
 ) {
   if (req.method === "DELETE") {
-    const sessionCookie = req.cookies.session;
-    if (!sessionCookie) return res.status(302).json({ message: "ok"});
-    else {
-      const data = await prisma.logins.findFirst({
-        where: {
-          sessionUUID: sessionCookie
-        },
-      })
-      if(!data) return res.status(302).json({ message: "ok"})
-      const { id } = data!
-      await prisma.logins.update({
-        data: {
-          sessionUUID: "",
-          expires: new Date()
-        },
-        where: {
-          id: id
-        }
-      })
-      const date = new Date();
-      date.setDate(date.getDate() - 2)
-      const sessionRemoved = serialize("session", '', {
-        expires: date,
-        path: "/"
+    try {
+      const sessionCookie = req.cookies.session;
+      
+      if (!sessionCookie) {
+        return res
+          .status(302)
+          .json({ message: "Cookie di sessione non trovato" });
+      }
+      
+      const data = await logout(sessionCookie);
+      if (data.isError) {
+        return res.status(302).json({ message: data.message! });
+      }
+
+      return res
+        .status(200)
+        .setHeader("Set-Cookie", data.data!)
+        .json({ message: "Utente sloggato" });
+    } catch (error) {
+      console.error("Errore api/auth/logout", error);
+      return res.status(500).json({
+        message: "Errore interno al server, ci scusiamo per il disagio",
       });
-      res.setHeader("Set-Cookie", sessionRemoved)
-      res.status(200).json({ message: "ok" });
     }
   } else {
     return res.status(405).json({ message: "Il metodo accetta solo DELETE" });

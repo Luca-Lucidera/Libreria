@@ -1,5 +1,6 @@
 import IApiResponse from "@/model/ApiResponse";
 import IUserRegisterDTO from "@/model/user/IUserRegisterDTO";
+import { setSessionCookie } from "@/service/server/authService";
 import { prisma } from "@/utils/prisma";
 import { serialize } from "cookie";
 import { randomUUID } from "crypto";
@@ -28,28 +29,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         }
       })
       
-      const expires = new Date(Date.now() + 3600000 * 24); //24 = numero di ore, 3600000: millisecondi == 1 ora
-      const now = new Date();
-      const sessionUUID = randomUUID();
-      const sessionCookie = serialize("session", sessionUUID, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "lax",
-        expires: expires,
-        path: "/",
-      });
-
-      await prisma.logins.create({
-        data: {
-          userId: user.id,
-          sessionUUID: sessionUUID,
-          expires: expires,
-          lastLogin: now,
-        },
-      });
-
+      const data = await setSessionCookie(user)
+      if(data.isError) {
+        return res.status(400).json({ message: data.message! })
+      }
+      
       return res
-        .setHeader("Set-Cookie", sessionCookie)
+        .setHeader("Set-Cookie", data.data!)
         .status(200)
         .json({ data: user });
     } catch (error) {
