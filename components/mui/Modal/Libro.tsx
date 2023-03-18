@@ -1,4 +1,4 @@
-import ILibro, { libroVuoto } from "@/interfaces/ILibro";
+import Libro, { libroVuoto } from "@/model/Libro";
 import {
   Button,
   Dialog,
@@ -11,16 +11,16 @@ import {
   Typography,
 } from "@mui/material";
 import { useState } from "react";
-import { editori } from "@/interfaces/Editore";
-import { tuttiTipoLibri } from "@/interfaces/TipoManga";
-import { status } from "@/interfaces/Status";
+import { editori } from "@/model/Editore";
+import { tuttiTipoLibri } from "@/model/TipoManga";
+import { status } from "@/model/Status";
 
 type Props = {
   open: boolean;
   setOpen: Function;
   isNewBook: boolean;
   setIsNewBook: Function;
-  libro: ILibro;
+  libro: Libro;
   setLibro: Function;
   create: Function;
   update: Function;

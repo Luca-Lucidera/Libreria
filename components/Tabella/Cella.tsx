@@ -1,7 +1,7 @@
-import ILibro from "@/interfaces/ILibro";
+import Libro from "@/model/Libro";
 
 export type TableCellProps = {
-  value: ILibro;
+  value: Libro;
   setLibroDaSelezionare: Function;
   setUpdateModalClick: Function;
 };

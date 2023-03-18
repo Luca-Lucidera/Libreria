@@ -1,5 +1,5 @@
-import IApiResponse from "@/interfaces/IApiResponse";
-import ILibro from "@/interfaces/ILibro";
+import IApiResponse from "@/model/ApiResponse";
+import Libro from "@/model/Libro";
 import { prisma } from "@/utils/prisma";
 import { NextApiRequest, NextApiResponse } from "next";
 
@@ -27,7 +27,7 @@ export default async function handler(
       if (new Date() > expires)
         return res.status(302).json({ message: "sessione scaduta" });
       if (!userId) return res.status(302).json({ message: "utente non trovato" });
-      const libro = req.body.libro as ILibro;
+      const libro = req.body.libro as Libro;
       if (!libro)
         return res.status(400).json({ message: "Inserire il libro nuovo" });
       const libroDB = await prisma.libri.update({

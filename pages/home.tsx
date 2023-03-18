@@ -1,6 +1,6 @@
 import style from "@/styles/home.module.css";
-import ILibro, { libroVuoto } from "@/interfaces/ILibro";
-import IUser from "@/interfaces/user/IUser";
+import Libro, { libroVuoto } from "@/model/Libro";
+import IUser from "@/model/user/IUser";
 import axios from "axios";
 import { createLibro, getUserLibri, updateLibro } from "@/service/libriService";
 import { logout } from "@/service/userService";
@@ -34,9 +34,10 @@ import ClearIcon from "@mui/icons-material/Clear";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { Box } from "@mui/system";
 import TableFilter from "@/components/mui/Modal/TableFilter";
-import { IEditore } from "@/interfaces/Editore";
-import { IStatus } from "@/interfaces/Status";
+import { IEditore } from "@/model/Editore";
+import { IStatus } from "@/model/Status";
 import CambiaONuovoLibro from "@/components/mui/Modal/Libro";
+import { headers } from "@/model/TableHeader";
 
 interface userProps {
   user: IUser;
@@ -54,13 +55,13 @@ export default function HomePage({ user }: userProps) {
   const [openModalLibro, setOpenModalLibro] = useState(false);
   const [isLibroNuovo, setIsLibroNuovo] = useState(false);
   const [liboDaCreareOModificare, setLibroDaCreareOModificare] =
-    useState<ILibro>({ ...libroVuoto });
+    useState<Libro>({ ...libroVuoto });
 
   //TABLE
   const [paginaCorrente, setPaginaCorrente] = useState(0);
   const [righePerPagina, setRighePerPagina] = useState(-1);
 
-  const filtraLibri = (): ILibro[] => {
+  const filtraLibri = (): Libro[] => {
     let libriFiltrati = [...libri];
     if (editoreScelto !== "Tutti")
       libriFiltrati = libriFiltrati.filter(
@@ -73,8 +74,8 @@ export default function HomePage({ user }: userProps) {
     return libriFiltrati;
   };
 
-  const libriDaMostrare = (): ILibro[] => {
-    const libriFiltrati: ILibro[] = filtraLibri();
+  const libriDaMostrare = (): Libro[] => {
+    const libriFiltrati: Libro[] = filtraLibri();
     const inizio = paginaCorrente * righePerPagina;
     const fine = paginaCorrente * righePerPagina + righePerPagina;
     if (fine < 0) return libriFiltrati;
@@ -91,7 +92,7 @@ export default function HomePage({ user }: userProps) {
   };
 
   //TANSTACK QUERY
-  const libriQuery = useQuery<ILibro[], Error>({
+  const libriQuery = useQuery<Libro[], Error>({
     queryKey: ["prendi-libri"],
     queryFn: async () => await getUserLibri(),
     enabled: user.id != null,
@@ -127,7 +128,6 @@ export default function HomePage({ user }: userProps) {
     },
   });
 
-  
   const aggiungiLibro = () => createBook.mutate();
   const modificaLibro = () => updateBook.mutate();
   const triggerLogout = () => logoutMutation.mutate();
@@ -181,22 +181,6 @@ export default function HomePage({ user }: userProps) {
       </>
     );
   }
-
-  const headers = [
-    "titolo",
-    "comprati",
-    "letti",
-    "tipo",
-    "editore",
-    "status",
-    "prezzo",
-    "modifica",
-    "elimina",
-  ];
-
-
-
-
 
   return (
     <>

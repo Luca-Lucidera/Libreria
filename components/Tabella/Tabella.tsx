@@ -1,8 +1,8 @@
-import ILibro from "@/interfaces/ILibro";
+import Libro from "@/model/Libro";
 import TableRow from "./Riga";
 
 type TabellaProps = {
-  libri: ILibro[];
+  libri: Libro[];
   setLibroDaSelezionare: Function;
   setUpdateModalClick: Function;
 };

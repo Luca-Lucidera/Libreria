@@ -1,5 +1,5 @@
-import IApiResponse from "@/interfaces/IApiResponse";
-import IUser from "@/interfaces/user/IUser";
+import IApiResponse from "@/model/ApiResponse";
+import IUser from "@/model/user/IUser";
 import { prisma } from "@/utils/prisma";
 import { serialize } from "cookie";
 import { NextApiRequest, NextApiResponse } from "next";

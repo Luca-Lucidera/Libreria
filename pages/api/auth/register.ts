@@ -1,5 +1,5 @@
-import IApiResponse from "@/interfaces/IApiResponse";
-import IUserRegisterDTO from "@/interfaces/user/IUserRegisterDTO";
+import IApiResponse from "@/model/ApiResponse";
+import IUserRegisterDTO from "@/model/user/IUserRegisterDTO";
 import { prisma } from "@/utils/prisma";
 import { serialize } from "cookie";
 import { randomUUID } from "crypto";

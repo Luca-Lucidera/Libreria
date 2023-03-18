@@ -3,7 +3,7 @@ import { FormEvent, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { login } from "@/service/userService";
 import { useRouter } from "next/router";
-import IUser from "@/interfaces/user/IUser";
+import IUser from "@/model/user/IUser";
 import { GetServerSideProps } from "next";
 import { serialize } from "cookie";
 import Link from "next/link";

@@ -1,8 +1,8 @@
-import ILibro from "@/interfaces/ILibro";
+import Libro from "@/model/Libro";
 import TableCell from "./Cella";
 
 type TableRowPops = {
-  libri: ILibro[];
+  libri: Libro[];
   isHeader: boolean;
   setLibroDaSelezionare?: Function;
   setUpdateModalClick?: Function;

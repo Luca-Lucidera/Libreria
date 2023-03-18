@@ -1,11 +1,11 @@
-import ILibro from "@/interfaces/ILibro";
-import IApiResponse from "@/interfaces/IApiResponse";
+import Libro from "@/model/Libro";
+import IApiResponse from "@/model/ApiResponse";
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "@/utils/prisma";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<IApiResponse<ILibro[]>>
+  res: NextApiResponse<IApiResponse<Libro[]>>
 ) {
   if (req.method === "GET") {
     try {
@@ -40,7 +40,7 @@ export default async function handler(
           status: true,
           prezzo: true,
         }
-      }) as ILibro[];
+      }) as Libro[];
       return res.status(200).json({data: libri})
     } catch (error) {
       console.error(error);

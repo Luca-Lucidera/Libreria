@@ -1,5 +1,5 @@
-import { filterEditori, IEditore } from "@/interfaces/Editore";
-import { filterStatus, IStatus } from "@/interfaces/Status";
+import { filterEditori, IEditore } from "@/model/Editore";
+import { filterStatus, IStatus } from "@/model/Status";
 import {
   Button,
   Dialog,

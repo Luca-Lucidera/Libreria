@@ -1,7 +1,7 @@
-import ILibro from "@/interfaces/ILibro";
+import Libro from "@/model/Libro";
 
 interface ModalProps {
-  libro: ILibro;
+  libro: Libro;
   setLibroSelezionato: Function;
 }
 

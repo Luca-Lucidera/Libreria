@@ -2,8 +2,8 @@ import { prisma } from "utils/prisma";
 import cookie from "cookie";
 import { NextApiRequest, NextApiResponse } from "next";
 import { randomUUID } from "crypto";
-import IApiResponse from "@/interfaces/IApiResponse";
-import IUser from "@/interfaces/user/IUser";
+import IApiResponse from "@/model/ApiResponse";
+import IUser from "@/model/user/IUser";
 
 export default async function handler(
   req: NextApiRequest,

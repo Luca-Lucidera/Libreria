@@ -1,4 +1,4 @@
-export default interface ILibro {
+export default interface Libro {
   id?: string
   titolo: string 
   comprati: number
@@ -9,7 +9,7 @@ export default interface ILibro {
   prezzo: number
 }
 
-export const libroVuoto: ILibro = {
+export const libroVuoto: Libro = {
   titolo: "",
   comprati: 1,
   letti: 0,
