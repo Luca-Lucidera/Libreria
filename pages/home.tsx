@@ -2,7 +2,7 @@ import style from "@/styles/home.module.css";
 import Libro, { libroVuoto } from "@/model/Libro";
 import IUser from "@/model/user/IUser";
 import axios from "axios";
-import { createLibro, getUserLibri, updateLibro } from "@/service/libriService";
+import { createLibro, deleteLibro, getUserLibri, updateLibro } from "@/service/libriService";
 import { logout } from "@/service/userService";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { serialize } from "cookie";
@@ -128,10 +128,25 @@ export default function HomePage({ user }: userProps) {
     },
   });
 
+  const deleteBook = useMutation({
+    mutationKey: ["delete-book"],
+    mutationFn: async (id: string) => await deleteLibro(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["prendi-libri"]);
+      setLibroDaCreareOModificare({ ...libroVuoto });
+      setOpenModalLibro(false);
+      setIsLibroNuovo(false);
+    },
+    onError: (error) => {
+      console.error("Errore elimina libro: ", error);
+      alert("Errore nell eliminazione del libro");
+    },
+  });
+
   const aggiungiLibro = () => createBook.mutate();
   const modificaLibro = () => updateBook.mutate();
   const triggerLogout = () => logoutMutation.mutate();
-
+  
   if (libriQuery.isLoading) {
     return (
       <CircularProgress
@@ -257,7 +272,9 @@ export default function HomePage({ user }: userProps) {
                         </Button>
                       </TableCell>
                       <TableCell align="center">
-                        <Button onClick={() => alert("NON IMPLEMENTATA")}>
+                        <Button
+                          onClick={() => deleteBook.mutate(libro.id!)}
+                        >
                           <ClearIcon color="error" />
                         </Button>
                       </TableCell>

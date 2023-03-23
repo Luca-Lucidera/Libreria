@@ -39,3 +39,16 @@ export async function createLibro(libro: Libro) {
     throw new Error(axiosError.response!.data.message);
   }
 }
+
+export async function deleteLibro(id: string) {
+  try {
+    const resp = await axios.delete<IApiResponse<boolean>>(`${process.env.NEXT_PUBLIC_API_ROOT}/libri/delete`, {
+      withCredentials: true,
+      data: { id },
+    });
+    return resp.data.data!
+  }  catch (error: any) {
+    const axiosError: AxiosError<IApiResponse<Libro>> = error;
+    throw new Error(axiosError.response!.data.message);
+  }
+}
