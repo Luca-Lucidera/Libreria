@@ -1,43 +1,40 @@
-import style from "@/styles/home.module.css";
+import CambiaONuovoLibro from "@/components/mui/Modal/Libro";
+import TableFilter from "@/components/mui/Modal/TableFilter";
+import { IEditore } from "@/model/Editore";
 import Libro, { libroVuoto } from "@/model/Libro";
+import { IStatus } from "@/model/Status";
+import { headers } from "@/model/TableHeader";
 import IUser from "@/model/user/IUser";
-import axios from "axios";
-import { createLibro, deleteLibro, getUserLibri, updateLibro } from "@/service/libriService";
+import {
+  createLibro,
+  deleteLibro,
+  getUserLibri,
+  updateLibro
+} from "@/service/libriService";
 import { logout } from "@/service/userService";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import style from "@/styles/home.module.css";
+import ClearIcon from "@mui/icons-material/Clear";
+import SettingsIcon from "@mui/icons-material/Settings";
+import {
+  Button,
+  CircularProgress,
+  Grid,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableFooter,
+  TableHead,
+  TablePagination,
+  TableRow,
+  Typography
+} from "@mui/material";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
 import { serialize } from "cookie";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import {
-  Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  TableFooter,
-  Dialog,
-  Typography,
-  TablePagination,
-  Select,
-  MenuItem,
-  CircularProgress,
-  TextField,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TableContainer,
-  Grid,
-} from "@mui/material";
-import ClearIcon from "@mui/icons-material/Clear";
-import SettingsIcon from "@mui/icons-material/Settings";
-import { Box } from "@mui/system";
-import TableFilter from "@/components/mui/Modal/TableFilter";
-import { IEditore } from "@/model/Editore";
-import { IStatus } from "@/model/Status";
-import CambiaONuovoLibro from "@/components/mui/Modal/Libro";
-import { headers } from "@/model/TableHeader";
 
 interface userProps {
   user: IUser;
@@ -146,7 +143,7 @@ export default function HomePage({ user }: userProps) {
   const aggiungiLibro = () => createBook.mutate();
   const modificaLibro = () => updateBook.mutate();
   const triggerLogout = () => logoutMutation.mutate();
-  
+
   if (libriQuery.isLoading) {
     return (
       <CircularProgress
@@ -174,15 +171,23 @@ export default function HomePage({ user }: userProps) {
   if (libri.length == 0) {
     return (
       <>
-        <Button
-          variant="contained"
-          sx={{ position: "fixed", top: "50%", left: "50%" }}
-          onClick={(e) => {
-            handleDialogModificheONuovoLibro(true);
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100%",
           }}
         >
-          Nuovo libro
-        </Button>
+          <Button
+            variant="contained"
+            onClick={(e) => {
+              handleDialogModificheONuovoLibro(true);
+            }}
+          >
+            Nuovo libro
+          </Button>
+        </div>
         <CambiaONuovoLibro
           open={openModalLibro}
           setOpen={setOpenModalLibro}
@@ -199,117 +204,123 @@ export default function HomePage({ user }: userProps) {
 
   return (
     <>
-      <Box height="100%">
-        <Grid
-          container
-          justifyContent="center"
-          alignItems="center"
-          direction="column"
-          height="100%"
-        >
-          <Grid item paddingTop="3%" height="20%">
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={(e) => setApriDialogFiltri(true)}
-            >
-              Filtri
-            </Button>
-            <Button
-              variant="contained"
-              sx={{ marginLeft: "50px" }}
-              onClick={(e) => {
-                handleDialogModificheONuovoLibro(true);
-              }}
-            >
-              Nuovo libro
-            </Button>
-            <Button
-              variant="contained"
-              sx={{ marginLeft: "50px" }}
-              color="error"
-              onClick={triggerLogout}
-            >
-              Logout
-            </Button>
-          </Grid>
-          <Grid item height="70%">
-            <TableContainer
-              sx={{ height: "100%", width: "60vw", scrollBehavior: "smooth" }}
-              className={style.table_container}
-            >
-              <Table stickyHeader>
-                <TableHead>
-                  <TableRow>
-                    {headers.map((h) => (
-                      <TableCell
-                        key={`header-${h}`}
-                        sx={{ backgroundColor: "black" }}
-                        align="center"
-                      >
-                        {h}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {libriDaMostrare().map((libro) => (
-                    <TableRow key={libro.id}>
-                      {Object.entries(libro).map(([key, value], i) =>
-                        key !== "id" ? (
-                          <TableCell key={i} align="center">
-                            {value}
-                          </TableCell>
-                        ) : null
-                      )}
-                      <TableCell align="center">
-                        <Button
-                          onClick={() =>
-                            handleDialogModificheONuovoLibro(false, libro)
-                          }
-                        >
-                          <SettingsIcon color="success" />
-                        </Button>
-                      </TableCell>
-                      <TableCell align="center">
-                        <Button
-                          onClick={() => deleteBook.mutate(libro.id!)}
-                        >
-                          <ClearIcon color="error" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-                <TableFooter>
-                  <TablePagination
-                    sx={{
-                      position: "sticky",
-                      bottom: 0,
-                      backgroundColor: "black",
-                    }}
-                    count={filtraLibri().length}
-                    page={paginaCorrente}
-                    rowsPerPage={righePerPagina}
-                    rowsPerPageOptions={
-                      filtraLibri().length > 5
-                        ? [5, 10, 20, { value: -1, label: "Tutti" }]
-                        : []
-                    }
-                    onRowsPerPageChange={(e) => {
-                      setRighePerPagina(+e.target.value);
-                      setPaginaCorrente(0);
-                    }}
-                    onPageChange={(e, nuovaPagina) => {
-                      setPaginaCorrente(nuovaPagina);
-                    }}
-                  />
-                </TableFooter>
-              </Table>
-            </TableContainer>
-          </Grid>
+      <Grid
+        container
+        justifyContent="center"
+        alignItems="center"
+        direction="column"
+        height="100%"
+      >
+        <Grid item height="10%" paddingTop="1.5%">
+          <Typography variant="h4">
+            {new Date().getHours() < 12
+              ? "Buongiorno "
+              : new Date().getHours() < 18
+              ? "Buon pomeriggio "
+              : "Buona sera "}
+            {user.nome}
+          </Typography>
         </Grid>
-      </Box>
+        <Grid item height="20%" paddingTop="3%" >
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={(e) => setApriDialogFiltri(true)}
+          >
+            Filtri
+          </Button>
+          <Button
+            variant="contained"
+            sx={{ marginLeft: "50px" }}
+            onClick={(e) => {
+              handleDialogModificheONuovoLibro(true);
+            }}
+          >
+            Nuovo libro
+          </Button>
+          <Button
+            variant="contained"
+            sx={{ marginLeft: "50px" }}
+            color="error"
+            onClick={triggerLogout}
+          >
+            Logout
+          </Button>
+        </Grid>
+        <Grid item height="70%">
+          <TableContainer
+            sx={{ height: "100%", width: "60vw", scrollBehavior: "smooth" }}
+            className={style.table_container}
+          >
+            <Table stickyHeader>
+              <TableHead>
+                <TableRow>
+                  {headers.map((h) => (
+                    <TableCell
+                      key={`header-${h}`}
+                      sx={{ backgroundColor: "black" }}
+                      align="center"
+                    >
+                      {h}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {libriDaMostrare().map((libro) => (
+                  <TableRow key={libro.id}>
+                    {Object.entries(libro).map(([key, value], i) =>
+                      key !== "id" ? (
+                        <TableCell key={i} align="center">
+                          {value}
+                        </TableCell>
+                      ) : null
+                    )}
+                    <TableCell align="center">
+                      <Button
+                        onClick={() =>
+                          handleDialogModificheONuovoLibro(false, libro)
+                        }
+                      >
+                        <SettingsIcon color="success" />
+                      </Button>
+                    </TableCell>
+                    <TableCell align="center">
+                      <Button onClick={() => deleteBook.mutate(libro.id!)}>
+                        <ClearIcon color="error" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+              <TableFooter>
+                <TablePagination
+                  sx={{
+                    position: "sticky",
+                    bottom: 0,
+                    backgroundColor: "black",
+                  }}
+                  count={filtraLibri().length}
+                  page={paginaCorrente}
+                  rowsPerPage={righePerPagina}
+                  rowsPerPageOptions={
+                    filtraLibri().length > 5
+                      ? [5, 10, 20, { value: -1, label: "Tutti" }]
+                      : []
+                  }
+                  onRowsPerPageChange={(e) => {
+                    setRighePerPagina(+e.target.value);
+                    setPaginaCorrente(0);
+                  }}
+                  onPageChange={(e, nuovaPagina) => {
+                    setPaginaCorrente(nuovaPagina);
+                  }}
+                />
+              </TableFooter>
+            </Table>
+          </TableContainer>
+        </Grid>
+      </Grid>
       <TableFilter
         open={apriDialogFiltri}
         setOpen={setApriDialogFiltri}

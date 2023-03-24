@@ -1,99 +1,176 @@
+import IUserRegisterDTO from "@/model/user/IUserRegisterDTO";
+import { register } from "@/service/userService";
+import { LinearProgress, Typography } from "@mui/material";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Card from "@mui/material/Card";
+import CardActions from "@mui/material/CardActions";
+import CardContent from "@mui/material/CardContent";
+import CardHeader from "@mui/material/CardHeader";
+import TextField from "@mui/material/TextField";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
 import { serialize } from "cookie";
 import { GetServerSideProps } from "next";
-import { FormEvent, useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import Link from "next/link";
 import { useRouter } from "next/router";
-import { register } from "@/service/userService";
-import axios from "axios";
+import { useState } from "react";
 
 export default function Register() {
   const router = useRouter();
-  const [nome, setNome] = useState("");
-  const [cognome, setCognome] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [userInfo, setUserInfo] = useState<IUserRegisterDTO>({
+    nome: "",
+    cognome: "",
+    email: "",
+    password: "",
+  });
 
   const registerMutation = useMutation<string, Error>({
-    mutationKey: ["register"],
-    mutationFn: async () => await register({ nome, cognome, email, password }),
+    mutationKey: ["register-mutation"],
+    mutationFn: async () => await register(userInfo),
     onSuccess: () => {
       router.push("/home");
     },
   });
 
-  function handleSubmit(e: FormEvent) {
-    e.preventDefault();
-    registerMutation.mutate();
-  }
   return (
-    <div className="flex justify-center items-center flex-col h-full">
-      <h1 className="text-white text-2xl mb-4">Register</h1>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="nome" className="text-white pr-10">Nome:</label>
-          <input
-            type="text"
-            id="nome"
-            className="pl-2  rounded-md"
-            value={nome}
-            onChange={(e) => setNome(e.target.value)}
-          />
-        </div>
-        <div className="mt-4">
-          <label htmlFor="cognome" className="text-white pr-3">Cognome: </label>
-          <input
-            type="text"
-            id="cognome"
-            className="pl-2  rounded-md"
-            value={cognome}
-            onChange={(e) => setCognome(e.target.value)}
-          />
-        </div>
-        <div className="mt-4">
-          <label htmlFor="email" className="text-white pr-11">Email: </label>
-          <input
-            type="email"
-            id="email"
-            className="pl-2  rounded-md"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-        <div className="mt-4">
-          <label htmlFor="password" className="text-white pr-4">Password: </label>
-          <input
-            type="password"
-            id="password"
-            className="pl-2  rounded-md"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-        <div className="mt-4 flex justify-center">
-          <button type="submit" className="text-white text-xl mt-4 border-solid border-2 rounded p-2 hover:bg-neutral-300 hover:text-black">Register</button>
-        </div>
-        {registerMutation.isLoading ? (
-          <p className="text-white text-xl mt-4">Caricamento...</p>
-        ) : null}
+    <Box
+      sx={{
+        height: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <Card
+        sx={{
+          minHeight: "50vh",
+          minWidth: "30vw",
+          borderRadius: "25px",
+          boxShadow: "0 4px 8px 0 rgba(0,0,0,0.2)",
+        }}
+      >
+        <form>
+          <CardHeader title="Register" sx={{ textAlign: "center" }} />
+          <CardContent
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <div>
+              <TextField
+                label="Name"
+                variant="outlined"
+                value={userInfo.nome}
+                onChange={(e) =>
+                  setUserInfo({ ...userInfo, nome: e.target.value })
+                }
+              />
+            </div>
+            <div style={{ marginTop: "10px" }}>
+              <TextField
+                label="Surname"
+                variant="outlined"
+                value={userInfo.cognome}
+                onChange={(e) =>
+                  setUserInfo({ ...userInfo, cognome: e.target.value })
+                }
+              />
+            </div>
+            <div style={{ marginTop: "10px" }}>
+              <TextField
+                type={"email"}
+                label="Email"
+                variant="outlined"
+                value={userInfo.email}
+                onChange={(e) =>
+                  setUserInfo({ ...userInfo, email: e.target.value })
+                }
+              />
+            </div>
+            <div style={{ marginTop: "10px" }}>
+              <TextField
+                type={"password"}
+                label="Password"
+                variant="outlined"
+                value={userInfo.password}
+                onChange={(e) =>
+                  setUserInfo({ ...userInfo, password: e.target.value })
+                }
+              />
+            </div>
+          </CardContent>
+          <CardActions
+            sx={{
+              justifyContent: "center",
+              alignContent: "center",
+              flexDirection: "column",
+            }}
+          >
+            <Button
+              variant="contained"
+              type="submit"
+              disabled={registerMutation.isLoading}
+              color={"primary"}
+              onClick={(e) => {
+                e.preventDefault();
+                registerMutation.mutate();
+              }}
+            >
+              Register
+            </Button>
+            <Link
+              href={"/"}
+              style={{ marginTop: "20px", marginBottom: "20px" }}
+            >
+              <Button variant="contained" disabled={registerMutation.isLoading}>
+                Torna alla login
+              </Button>
+            </Link>
+          </CardActions>
+        </form>
+        {registerMutation.isLoading ? <LinearProgress color="primary" /> : null}
         {registerMutation.isError ? (
-          <p className="text-red text-2xl mt-4">{registerMutation.error.message}</p>
+          <Typography
+            color={"error"}
+            align="center"
+            variant="h5"
+            marginBottom={"20px"}
+            marginTop={"20px"}
+          >
+            {registerMutation.error.message}
+          </Typography>
         ) : null}
-      </form>
-    </div>
+      </Card>
+    </Box>
   );
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   if (!req.cookies.session) return { props: {} };
-  const { status } = await axios.get("https://la-tua-libreria.vercel.app/api/auth/session", {
-    withCredentials: true,
-    headers: {
-      cookie: serialize("session", req.cookies.session),
-    }
-  })
-  if (status == 200)
-    return { redirect: { permanent: false, destination: "/home" }, props: {} };
-  return {
-    props: {},
-  };
+  try {
+    const { status } = await axios.get(
+      `${process.env.NEXT_PUBLIC_API_ROOT}/auth/session`,
+      {
+        withCredentials: true,
+        headers: {
+          cookie: serialize("session", req.cookies.session),
+        },
+      }
+    );
+    if (status == 200)
+      return {
+        redirect: { permanent: false, destination: "/home" },
+        props: {},
+      };
+    return {
+      props: {},
+    };
+  } catch (error) {
+    console.log("ERRORE:", error);
+    return { props: {} };
+  }
 };

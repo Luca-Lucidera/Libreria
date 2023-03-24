@@ -2,15 +2,13 @@ import IApiResponse from "@/model/ApiResponse";
 import IUserRegisterDTO from "@/model/user/IUserRegisterDTO";
 import { setSessionCookie } from "@/service/server/authService";
 import { prisma } from "@/utils/prisma";
-import { serialize } from "cookie";
-import { randomUUID } from "crypto";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<IApiResponse<any>>) {
   if (req.method === "POST") {
     try {
       const { nome, cognome, email, password } = req.body as IUserRegisterDTO;
-      if(!nome || !cognome || !email || !password) return res.status(400).json({ message: "Credenziali mancano"})
+      if(!nome || !cognome || !email || !password) return res.status(400).json({ message: "Mancano le credenziali"})
 
       const userFound = await prisma.users.findFirst({
         where: {
