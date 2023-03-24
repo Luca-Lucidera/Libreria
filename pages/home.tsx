@@ -44,8 +44,6 @@ export default function HomePage({ user }: userProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  //Da qui rework dello state
-  //MODAL
   const [apriDialogFiltri, setApriDialogFiltri] = useState(false);
   const [editoreScelto, setEditoreScelto] = useState<IEditore>("Tutti");
   const [statusScelto, setStatusScelto] = useState<IStatus>("Tutti");
@@ -217,7 +215,7 @@ export default function HomePage({ user }: userProps) {
               ? "Buongiorno "
               : new Date().getHours() < 18
               ? "Buon pomeriggio "
-              : "Buona sera "}
+              : "Buonasera "}
             {user.nome}
           </Typography>
         </Grid>
