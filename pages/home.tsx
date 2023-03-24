@@ -10,7 +10,7 @@ import {
   createLibro,
   deleteLibro,
   getUserLibri,
-  updateLibro
+  updateLibro,
 } from "@/service/libriService";
 import { logout } from "@/service/userService";
 import style from "@/styles/home.module.css";
@@ -28,7 +28,8 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  Typography
+  TextField,
+  Typography,
 } from "@mui/material";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
@@ -61,11 +62,12 @@ export default function HomePage({ user }: userProps) {
   const [libroDaEliminare, setLibroDaEliminare] = useState({
     id: "",
     titolo: "",
-  })
+  });
 
   //TABLE
   const [paginaCorrente, setPaginaCorrente] = useState(0);
   const [righePerPagina, setRighePerPagina] = useState(-1);
+  const [search, setSearch] = useState("");
 
   const filtraLibri = (): Libro[] => {
     let libriFiltrati = [...libri];
@@ -77,6 +79,11 @@ export default function HomePage({ user }: userProps) {
       libriFiltrati = libriFiltrati.filter(
         (libro) => libro.status === statusScelto
       );
+    if (search !== "") {
+      libriFiltrati = libriFiltrati.filter((libro) =>
+        libro.titolo.includes(search)
+      );
+    }
     return libriFiltrati;
   };
 
@@ -211,10 +218,6 @@ export default function HomePage({ user }: userProps) {
     );
   }
 
-  function handleLibroDaEliminare(id: string, titolo: string) {
-    setLibroDaEliminare({ id, titolo });
-    setOpenModalEliminaLibro(true);
-  }
   function confirmDelete() {
     deleteBook.mutate(libroDaEliminare.id);
     setLibroDaEliminare({ id: "", titolo: "" });
@@ -265,9 +268,15 @@ export default function HomePage({ user }: userProps) {
             Logout
           </Button>
         </Grid>
-        <Grid item height="70%">
+        <Grid item height="60%">
+          <TextField
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            label="search"
+            sx={{ marginBottom: "2%", position: "sticky" }}
+          />
           <TableContainer
-            sx={{ height: "100%", width: "60vw", scrollBehavior: "smooth" }}
+            sx={{ height: "90%", width: "60vw", scrollBehavior: "smooth" }}
             className={style.table_container}
           >
             <Table stickyHeader>
@@ -306,7 +315,13 @@ export default function HomePage({ user }: userProps) {
                     </TableCell>
                     <TableCell align="center">
                       <Button
-                        onClick={() => handleLibroDaEliminare(libro.id!, libro.titolo)}
+                        onClick={() => {
+                          setLibroDaEliminare({
+                            id: libro.id!,
+                            titolo: libro.titolo,
+                          });
+                          setOpenModalEliminaLibro(true);
+                        }}
                         disabled={deleteBook.isLoading || updateBook.isLoading}
                       >
                         <ClearIcon color="error" />

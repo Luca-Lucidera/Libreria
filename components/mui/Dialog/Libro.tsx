@@ -1,4 +1,7 @@
+import { editori } from "@/model/Editore";
 import Libro, { libroVuoto } from "@/model/Libro";
+import { status } from "@/model/Status";
+import { tuttiTipoLibri } from "@/model/TipoManga";
 import {
   Button,
   Dialog,
@@ -11,9 +14,6 @@ import {
   Typography,
 } from "@mui/material";
 import { useState } from "react";
-import { editori } from "@/model/Editore";
-import { tuttiTipoLibri } from "@/model/TipoManga";
-import { status } from "@/model/Status";
 
 type Props = {
   open: boolean;
@@ -49,6 +49,7 @@ export default function CambiaONuovoLibro({
   };
 
   const saveBook = () => {
+    setOpen(false);
     if (!modificheFatte) {
       handleChiudiSenzaSalvare();
     } else if (isNewBook) {
