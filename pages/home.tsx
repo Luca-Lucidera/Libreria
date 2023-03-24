@@ -1,5 +1,6 @@
-import CambiaONuovoLibro from "@/components/mui/Modal/Libro";
-import TableFilter from "@/components/mui/Modal/TableFilter";
+import ConfirmDelete from "@/components/mui/Dialog/ConfirmDelete";
+import CambiaONuovoLibro from "@/components/mui/Dialog/Libro";
+import TableFilter from "@/components/mui/Dialog/TableFilter";
 import { IEditore } from "@/model/Editore";
 import Libro, { libroVuoto } from "@/model/Libro";
 import { IStatus } from "@/model/Status";
@@ -44,13 +45,23 @@ export default function HomePage({ user }: userProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
 
+  //DIALOG FILTRI
   const [apriDialogFiltri, setApriDialogFiltri] = useState(false);
   const [editoreScelto, setEditoreScelto] = useState<IEditore>("Tutti");
   const [statusScelto, setStatusScelto] = useState<IStatus>("Tutti");
+
+  //DIALOG MODIFICA O NUOVO LIBRO
   const [openModalLibro, setOpenModalLibro] = useState(false);
   const [isLibroNuovo, setIsLibroNuovo] = useState(false);
   const [liboDaCreareOModificare, setLibroDaCreareOModificare] =
     useState<Libro>({ ...libroVuoto });
+
+  //DIALOG ELIMINA LIBRO
+  const [openModalEliminaLibro, setOpenModalEliminaLibro] = useState(false);
+  const [libroDaEliminare, setLibroDaEliminare] = useState({
+    id: "",
+    titolo: "",
+  })
 
   //TABLE
   const [paginaCorrente, setPaginaCorrente] = useState(0);
@@ -200,6 +211,15 @@ export default function HomePage({ user }: userProps) {
     );
   }
 
+  function handleLibroDaEliminare(id: string, titolo: string) {
+    setLibroDaEliminare({ id, titolo });
+    setOpenModalEliminaLibro(true);
+  }
+  function confirmDelete() {
+    deleteBook.mutate(libroDaEliminare.id);
+    setLibroDaEliminare({ id: "", titolo: "" });
+  }
+
   return (
     <>
       <Grid
@@ -219,7 +239,7 @@ export default function HomePage({ user }: userProps) {
             {user.nome}
           </Typography>
         </Grid>
-        <Grid item height="20%" paddingTop="3%" >
+        <Grid item height="20%" paddingTop="3%">
           <Button
             variant="contained"
             color="secondary"
@@ -276,6 +296,7 @@ export default function HomePage({ user }: userProps) {
                     )}
                     <TableCell align="center">
                       <Button
+                        disabled={deleteBook.isLoading || updateBook.isLoading}
                         onClick={() =>
                           handleDialogModificheONuovoLibro(false, libro)
                         }
@@ -284,7 +305,10 @@ export default function HomePage({ user }: userProps) {
                       </Button>
                     </TableCell>
                     <TableCell align="center">
-                      <Button onClick={() => deleteBook.mutate(libro.id!)}>
+                      <Button
+                        onClick={() => handleLibroDaEliminare(libro.id!, libro.titolo)}
+                        disabled={deleteBook.isLoading || updateBook.isLoading}
+                      >
                         <ClearIcon color="error" />
                       </Button>
                     </TableCell>
@@ -336,6 +360,12 @@ export default function HomePage({ user }: userProps) {
         setLibro={setLibroDaCreareOModificare}
         create={aggiungiLibro}
         update={modificaLibro}
+      />
+      <ConfirmDelete
+        open={openModalEliminaLibro}
+        setOpen={setOpenModalEliminaLibro}
+        libro={libroDaEliminare}
+        deleteFn={confirmDelete}
       />
     </>
   );

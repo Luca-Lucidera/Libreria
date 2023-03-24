@@ -18,10 +18,10 @@ export default async function handler(
       if (session.isError) {
         return res.status(302).json({ message: session.message! });
       }
-
+      
       const user = session.data!;
       const libro = req.body.libro as Libro;
-      
+
       if (!libro) {
         return res.status(400).json({ message: "Inserire il libro nuovo" });
       }
@@ -29,9 +29,8 @@ export default async function handler(
       const libreria = (await prisma.libri.findMany({
         where: { userId: user.id! },
       })) as Libro[];
-
-      const libroTrovato = libreria.find((l) =>
-        l.titolo.toLowerCase().includes(libro.titolo.toLowerCase())
+      const libroTrovato = libreria.find(
+        (l) => l.titolo.toLowerCase() === libro.titolo.toLowerCase()
       );
 
       if (libroTrovato) {

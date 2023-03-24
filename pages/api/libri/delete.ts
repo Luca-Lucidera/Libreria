@@ -1,7 +1,7 @@
-import { prisma } from "./../../../utils/prisma";
 import ApiResponse from "@/model/ApiResponse";
 import { checkSession } from "@/service/server/authService";
 import { NextApiRequest, NextApiResponse } from "next";
+import { prisma } from "./../../../utils/prisma";
 
 export default async function handler(
   req: NextApiRequest,
@@ -22,6 +22,7 @@ export default async function handler(
           .status(400)
           .json({ message: "Il libro non è stato trovato" });
       }
+      console.log("LIBRO DA BODY:", req.body);
       const dbRes = await prisma.libri.delete({
         where: {
           id: req.body.id,
